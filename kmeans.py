@@ -1,7 +1,8 @@
 
 import numpy as np
+import pandas as pd
 
-class Kmeans:
+class ManualKMeans:
 
     """
         Inintialising all the variables
@@ -10,8 +11,7 @@ class Kmeans:
         
         self.n_clusters = n_clusters
         self.data = data.copy()
-        self.columns = data.columns.tolist()
-        self.data['cluster'] = np.zeros(data.shape[0])
+        self.n_clusters = [-1] *(data.shape[0])
         self.cost_function_val = np.inf
 
         self.error = 0.1
@@ -31,24 +31,32 @@ class Kmeans:
     Here we are assigning clusters to the datapoints based on the nearest cluster center
     """
 
-    def assign_clusters(self):
+    def assign_clusters(self,max_iterations = 50,batch_size = None):
 
-        for i in range(100):
+        if not batch_size:
 
-            self.data['cluster'] = self.data[self.columns].apply(self.get_single_instance_cluster,axis=1)
+            batch_size = self.data.shape[0]
 
-            self.update_centroids()
+        for i in range(max_iterations):
 
-            updated_cost_value = self.get_cost_function_value()
+            batch_indices = np.random.choice(len(self.data), batch_size, replace=False)
 
-            if self.error > (self.cost_function_val -  updated_cost_value): 
-                print(i)
-                break
+            batch = self.data.iloc[batch_indices]
             
-            self.cost_function_val = updated_cost_value
+            cols = batch.columns
+
+            clusters = batch.apply(self.get_single_instance_cluster, axis=1)
+            
+            self.update_centroids(batch,clusters)
+
+            updated_cost_value = self.get_cost_function_value(batch,clusters)
 
 
-        return self.centers,self.data['cluster']
+        final_clusters = self.data.apply(self.get_single_instance_cluster, axis=1)
+
+        return updated_cost_value,self.centers,final_clusters
+
+
 
     """
     Update single instance cluster
@@ -60,17 +68,22 @@ class Kmeans:
     """
     Updating centroids
     """
-    def update_centroids(self):
+    def update_centroids(self,batch,clusters):
 
-        self.centers = self.data.groupby('cluster')[self.columns].mean().values
+        updated_data = batch.copy()
+
+        updated_data['cluster'] = clusters
+
+        self.centers = updated_data.groupby('cluster').mean().values
     
     """
     Getting cost function
     """
-    def get_cost_function_value(self):
+    def get_cost_function_value(self,batch,clusters):
         cost = 0
+
         for index,center in enumerate(self.centers):
-            for _, instance in (self.data[self.data['cluster']==index][self.columns]).iterrows():
+            for _, instance in (batch[clusters==index]).iterrows():
                 cost += sum((instance - center)**2)
 
         return round(cost,2)

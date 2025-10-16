@@ -126,10 +126,12 @@ $$
 Disadvantages
 - Requires specifying K: You must decide the number of clusters beforehand, which may not be obvious for real-world data.
 - Sensitive to initial centroids: Poor initialization can lead to suboptimal clustering or different results on multiple runs.
-<p align="center"><img src="Images/k-means_poor_initialisation.webp" alt="k-means" width="25%"/></p>
+<p align="center"><img src="Images/k-means_poor_initialisation.webp" alt="k-means" width="50%"/></p>
+
 - Sensitive to outliers: Outliers can skew centroids, causing clusters to shift away from the true center of the data.
 - Assumes spherical clusters: K-Means works best when clusters are roughly circular/spherical and of similar size. It struggles with non-linear or irregularly shaped clusters (e.g., elongated, cylindrical, or crescent-shaped).
-<p align="center"><img src="Images/k-means_circular_clusters.webp" alt="k-means" width="50%"/></p>
+<p align="center"><img src="Images/k-means_spherical_clusters.webp" alt="k-means" width="50%"/></p>
+
 - May converge to local minima: The algorithm optimizes the objective function locally, not globally, so it might not find the best overall clustering.
 - Feature scaling matters: K-Means relies on distance measures, so features with larger scales can dominate the clustering unless data is standardized.
 - Sensitive to noise: High levels of noise in data can reduce clustering quality.

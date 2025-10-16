@@ -51,3 +51,86 @@ There are numerous algorithms available to solve clustering problems, and each u
     - BIRCH (Balanced Iterative Reducing and Clustering using Hierarchies) – efficient for large datasets.
     - Spectral Clustering – uses graph theory and eigenvalues to cluster data in complex structures.
     
+## Centroid-Based Methods
+
+### K-Means 
+
+K-Means is straightforward once you understand some basic math. The algorithm partitions data into K clusters by iteratively updating cluster centroids.
+
+Steps : 
+- Randomly select K samples as initial centroids.
+   - 
+- Compute the distance of each data point to all K centroids.
+- Assign each point to the nearest centroid.
+- Update each centroid based on the mean of points assigned to it.
+- Repeat steps 2–4 until the cluster assignments no longer change or converge.
+
+<p align="center">
+<img src="Images/k-means.webp" alt="k-means" width="50%"/>
+</p>
+
+Lets see mathematical view
+
+Step1 :
+
+We have a dataset with n samples, each with j features
+
+$$
+X  = \\{ x_1,x_2,..,x_j \\} \quad x_j \in \mathbb{R}^j
+$$
+
+We want to partition these n samples into K clusters:
+
+$$
+ C_1,C_2,..,C_k 
+$$
+
+Let the initial centroids be:
+
+$$
+ c_1,c_2,..,c_k \quad c_k \in \mathbb{R}^j
+$$
+
+Step2 : 
+
+For each sample $$x_i$$, assign it to the nearest centroid
+
+$$
+ \text{Assign } x_i \text{ to cluster } C_k \text{ such that : }  k = \arg\min_k || x_i - c_k ||^2
+$$
+
+Step 3 :
+
+After assigning points, update each centroid to be the mean of points in its cluster:
+
+$$
+ \ c_k = \frac{1}{|C_k|} \sum_{x_i \in \mathbb{C_k} }x_i
+$$
+
+Where ${|C_k|}$ is the number of points in cluster ${C_k}$
+
+Step 4 : 
+
+Though out the process our aim is to reduce total within-cluster variance
+
+
+$$
+ J = \sum_{k=0}^{K}\sum_{x_i \in \mathbb{C_k} }|| x_i - c_k ||^2
+$$
+
+- J is called the distortion function or inertia.
+
+- The algorithm iterates assignment → update until J converges (changes very little) or cluster assignments stop changing
+
+
+Disadvantages
+- Requires specifying K: You must decide the number of clusters beforehand, which may not be obvious for real-world data.
+- Sensitive to initial centroids: Poor initialization can lead to suboptimal clustering or different results on multiple runs.
+<p align="center"><img src="Images/k-means_poor_initialisation.webp" alt="k-means" width="25%"/></p>
+- Sensitive to outliers: Outliers can skew centroids, causing clusters to shift away from the true center of the data.
+- Assumes spherical clusters: K-Means works best when clusters are roughly circular/spherical and of similar size. It struggles with non-linear or irregularly shaped clusters (e.g., elongated, cylindrical, or crescent-shaped).
+<p align="center"><img src="Images/k-means_circular_clusters.webp" alt="k-means" width="50%"/></p>
+- May converge to local minima: The algorithm optimizes the objective function locally, not globally, so it might not find the best overall clustering.
+- Feature scaling matters: K-Means relies on distance measures, so features with larger scales can dominate the clustering unless data is standardized.
+- Sensitive to noise: High levels of noise in data can reduce clustering quality.
+

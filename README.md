@@ -178,7 +178,7 @@ Key Points:
     - The dataset contains categorical or mixed data.
     - Outliers are present, as medoids are less affected by extreme values.
 - A common implementation of this algorithm is PAM (Partitioning Around Medoids).
--  [View K-Medoids manual code implementation](kmediods.py)
+-  [View K-Medoids manual code implementation](kmedoids.py)
 
 Advantages : 
 - Works well with non-Euclidean and categorical data.

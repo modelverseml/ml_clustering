@@ -162,3 +162,30 @@ Key points:
 - After initialization, the algorithm proceeds with standard K-Means steps: assign points to the nearest centroid and update centroids iteratively.
 - K-Means++ reduces the likelihood of poor local minima and often converges faster than random initialization.
 - Disadvantages of K-Means (e.g., sensitivity to outliers, assumption of spherical clusters) still apply.
+
+
+### K-Medoids
+
+K-Medoids is a clustering algorithm similar to K-Means, but instead of using the mean of cluster points as the center, it uses an actual data point (called a medoid) as the cluster representative.
+This makes K-Medoids more robust to noise and outliers.
+
+Key Points:
+
+- Like K-Means, the goal is to partition the dataset into k clusters.
+- Instead of calculating a centroid (which might not be part of the dataset), each cluster center is an actual sample — the medoid.
+- The algorithm minimizes the sum of pairwise dissimilarities (distances) between points and their corresponding medoid.
+- K-Medoids is particularly useful when:
+    - The dataset contains categorical or mixed data.
+    - Outliers are present, as medoids are less affected by extreme values.
+- A common implementation of this algorithm is PAM (Partitioning Around Medoids).
+-  [View K-Medoids manual code implementation](kmediods.py)
+
+Advantages : 
+- Works well with non-Euclidean and categorical data.
+- Less sensitive to outliers compared to K-Means.
+- Produces more stable clusters because medoids are actual points.
+
+Disadvantages:
+- Computationally expensive for large datasets (especially the PAM algorithm).
+- Requires specifying the number of clusters (k) in advance.
+- May still converge to local minima, depending on initial medoid selection.

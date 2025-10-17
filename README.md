@@ -141,27 +141,46 @@ Disadvantages
 
 ### Mini Batch K-Means 
 
-Mini-Batch K-Means is a variant of K-Means designed for large datasets. The core idea is the same as K-Means, but it updates centroids using small random batches instead of the full dataset, which improves efficiency
+Mini-Batch K-Means is a variant of the traditional K-Means algorithm designed to handle large-scale datasets efficiently.
 
-Main differences from standard K-Means:
+When we have more than a million records, the standard K-Means algorithm becomes computationally expensive because it needs to calculate the distance between every data point and each centroid during every iteration. This leads to excessive computation time and memory usage, making K-Means less feasible for big data applications.
 
-- Instead of computing distances for all points in the dataset, it computes distances for a random subset (mini-batch) of points in each iteration.
-- Centroids are updated incrementally based only on the current mini-batch.
-- This allows the algorithm to run faster on very large datasets without sacrificing too much accuracy.
-- It still shares the same disadvantages as K-Means, such as sensitivity to outliers and the assumption of spherical clusters.
+To overcome this, Mini-Batch K-Means introduces the concept of mini-batches. Instead of using the entire dataset to update centroids in each iteration, it randomly selects a small batch of samples. The centroids are then updated based on these batches, and the process continues iteratively with new random batches. This approach significantly reduces computation time while still producing results similar to the standard K-Means algorithm.
+
+Key points : 
+- Computationally efficient compared to standard K-Means.
+- Uses random mini-batches to update centroids, improving scalability.
+- Inherits the same disadvantages as K-Means (e.g., need to predefine k, sensitivity to initialization, and potential convergence to local minima).
 - [View Mini-Batch K-Means manual code implementation](kmeans.py)
 
 ### K-Means++
 
-K-Means++ is an improved version of the standard K-Means algorithm, designed to choose better initial centroids. Proper initialization improves convergence speed and clustering accuracy.
+K-Means++ is an improved version of the standard K-Means algorithm that focuses on selecting better initial centroids to achieve more stable and accurate clustering results.
 
-Key points:
-- The first centroid is chosen randomly from the dataset.
-- Subsequent centroids are chosen probabilistically, with a higher chance for points farther from existing centroids (distance squared is used for weighting).
-- This process continues until all k centroids are initialized. [View K++Means manual code implementation](kppmeans.py)
-- After initialization, the algorithm proceeds with standard K-Means steps: assign points to the nearest centroid and update centroids iteratively.
-- K-Means++ reduces the likelihood of poor local minima and often converges faster than random initialization.
-- Disadvantages of K-Means (e.g., sensitivity to outliers, assumption of spherical clusters) still apply.
+In the traditional K-Means algorithm, the initial centroids are chosen randomly from the dataset. This randomness can lead to poor clustering results — for example, if the selected centroids are very close to each other, the resulting clusters may not represent the data distribution effectively.
+
+K-Means++ solves this problem by choosing the initial centroids in a more intelligent and distance-aware way. It ensures that centroids are as far apart as possible, which leads to faster convergence and better cluster separation.
+
+
+Steps to Select Initial Centroids:
+- Select one random sample from the dataset as the first centroid.
+- For each data point ${x_i}$, compute the distance ${D(x_i)}$ to the nearest already chosen centroid
+
+$$
+  D(x_i) = \min_{c_j \in C} ||x_i - c_j||^2
+  $$
+- Choose the next centroid probabilistically, where the probability of selecting a point is proportional to the square of its distance
+
+$$
+P(x_i) = \frac{D(x_i)^2}{\sum_{x_j \in X} D(x_j)^2}
+$$
+- Repeat steps 2–3 until all k centroids are initialized.
+- Proceed with the standard K-Means algorithm (assignment and update steps).
+- [View K++Means manual code implementation](kppmeans.py)
+
+K-Means++ only improves the initialization step of K-Means.
+
+It still inherits all the disadvantages of the standard K-Means algorithm
 
 
 ### K-Medoids

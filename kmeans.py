@@ -7,11 +7,9 @@ class ManualKMeans:
     """
         Inintialising all the variables
     """
-    def __init__(self, n_clusters,data):
+    def __init__(self,data):
         
-        self.n_clusters = n_clusters
         self.data = data.copy()
-        self.n_clusters = [-1] *(data.shape[0])
         self.cost_function_val = np.inf
 
         self.error = 0.1

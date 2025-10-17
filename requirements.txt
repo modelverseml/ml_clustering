@@ -6,3 +6,4 @@ matplotlib
 seaborn
 scikit-learn
 ucimlrepo
+scikit-learn-extra

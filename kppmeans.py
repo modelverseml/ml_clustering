@@ -29,7 +29,7 @@ class KPPMeans:
 
     def assign_clusters(self):
 
-        manual_kmeans_algo = ManualKMeans(n_clusters = self.n_clusters, data = self.data)
+        manual_kmeans_algo = ManualKMeans(data = self.data)
         manual_kmeans_algo.initialise_centers(self.centers)   
         return manual_kmeans_algo.assign_clusters()
 

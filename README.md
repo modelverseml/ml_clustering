@@ -65,7 +65,7 @@ Steps :
 - Assign each point to the nearest centroid.
 - Update each centroid based on the mean of points assigned to it.
 - Repeat steps 2–4 until the cluster assignments no longer change or converge.
-- [View K-Means manual implementation](kmeans.py)
+- [View K-Means manual code implementation](kmeans.py)
 
 <p align="center">
 <img src="Images/k-means.webp" alt="k-means" width="50%"/>
@@ -149,7 +149,7 @@ Main differences from standard K-Means:
 - Centroids are updated incrementally based only on the current mini-batch.
 - This allows the algorithm to run faster on very large datasets without sacrificing too much accuracy.
 - It still shares the same disadvantages as K-Means, such as sensitivity to outliers and the assumption of spherical clusters.
-- [View Mini-Batch K-Means manual implementation](kmeans.py)
+- [View Mini-Batch K-Means manual code implementation](kmeans.py)
 
 ### K-Means++
 
@@ -158,7 +158,7 @@ K-Means++ is an improved version of the standard K-Means algorithm, designed to 
 Key points:
 - The first centroid is chosen randomly from the dataset.
 - Subsequent centroids are chosen probabilistically, with a higher chance for points farther from existing centroids (distance squared is used for weighting).
-- This process continues until all k centroids are initialized. [View K++Means manual implementation](kppmeans.py)
+- This process continues until all k centroids are initialized. [View K++Means manual code implementation](kppmeans.py)
 - After initialization, the algorithm proceeds with standard K-Means steps: assign points to the nearest centroid and update centroids iteratively.
 - K-Means++ reduces the likelihood of poor local minima and often converges faster than random initialization.
 - Disadvantages of K-Means (e.g., sensitivity to outliers, assumption of spherical clusters) still apply.

@@ -25,6 +25,7 @@ There are numerous algorithms available to solve clustering problems, and each u
   These algorithms group data points based on their distance from central points (called centroids).
     - K-Means
     - Mini-Batch K-Means
+    - K++ Means
     - K-Medoids
  
 - Density-Based Methods
@@ -136,3 +137,26 @@ Disadvantages
 - Feature scaling matters: K-Means relies on distance measures, so features with larger scales can dominate the clustering unless data is standardized.
 - Sensitive to noise: High levels of noise in data can reduce clustering quality.
 
+
+### Mini Batch K-Means 
+
+Mini-Batch K-Means is a variant of K-Means designed for large datasets. The core idea is the same as K-Means, but it updates centroids using small random batches instead of the full dataset, which improves efficiency
+
+Main differences from standard K-Means:
+
+- Instead of computing distances for all points in the dataset, it computes distances for a random subset (mini-batch) of points in each iteration.
+- Centroids are updated incrementally based only on the current mini-batch.
+- This allows the algorithm to run faster on very large datasets without sacrificing too much accuracy.
+- It still shares the same disadvantages as K-Means, such as sensitivity to outliers and the assumption of spherical clusters.
+
+### K-Means++
+
+K-Means++ is an improved version of the standard K-Means algorithm, designed to choose better initial centroids. Proper initialization improves convergence speed and clustering accuracy.
+
+Key points:
+- The first centroid is chosen randomly from the dataset.
+- Subsequent centroids are chosen probabilistically, with a higher chance for points farther from existing centroids (distance squared is used for weighting).
+- This process continues until all k centroids are initialized. [View K-Means implementation](kppmeans.py)
+- After initialization, the algorithm proceeds with standard K-Means steps: assign points to the nearest centroid and update centroids iteratively.
+- K-Means++ reduces the likelihood of poor local minima and often converges faster than random initialization.
+- Disadvantages of K-Means (e.g., sensitivity to outliers, assumption of spherical clusters) still apply.

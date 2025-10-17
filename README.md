@@ -202,6 +202,8 @@ $$
 \text{where } m(x_i) \text { is the medoid closest to point } x_i
 $$
 
+- If the swap reduces the total cost, update the medoid; otherwise, keep the current one.
+- Repeat steps 2–4 until no change in medoids occurs or the cost function converges.
 - [View K-Medoids manual code implementation](kmedoids.py)
 
 Advantages : 

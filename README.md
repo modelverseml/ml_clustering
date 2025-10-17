@@ -188,16 +188,21 @@ It still inherits all the disadvantages of the standard K-Means algorithm
 K-Medoids is a clustering algorithm similar to K-Means, but instead of using the mean of cluster points as the center, it uses an actual data point (called a medoid) as the cluster representative.
 This makes K-Medoids more robust to noise and outliers.
 
-Key Points:
+Steps:
 
-- Like K-Means, the goal is to partition the dataset into k clusters.
-- Instead of calculating a centroid (which might not be part of the dataset), each cluster center is an actual sample — the medoid.
-- The algorithm minimizes the sum of pairwise dissimilarities (distances) between points and their corresponding medoid.
-- K-Medoids is particularly useful when:
-    - The dataset contains categorical or mixed data.
-    - Outliers are present, as medoids are less affected by extreme values.
-- A common implementation of this algorithm is PAM (Partitioning Around Medoids).
--  [View K-Medoids manual code implementation](kmedoids.py)
+- Select k random medoids from the dataset as initial centers.
+- Assign each data point to the nearest medoid based on a distance metric (e.g., Euclidean or Manhattan distance).
+- For each cluster, attempt to swap the medoid with a non-medoid data point and calculate the total cost (sum of distances of all points to their nearest medoid):
+
+$$
+\text{Cost} = \sum_{i = 1}^n \text{distance}{(x_i,m(x_i))}
+$$
+
+$$
+\text{where } m(x_i) \text { is the medoid closest to point } x_i
+$$
+
+- [View K-Medoids manual code implementation](kmedoids.py)
 
 Advantages : 
 - Works well with non-Euclidean and categorical data.

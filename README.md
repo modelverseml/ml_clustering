@@ -59,8 +59,7 @@ There are numerous algorithms available to solve clustering problems, and each u
 K-Means is straightforward once you understand some basic math. The algorithm partitions data into K clusters by iteratively updating cluster centroids.
 
 Steps : 
-- Randomly select K samples as initial centroids.
-   - 
+- Randomly select K samples as initial centroids. 
 - Compute the distance of each data point to all K centroids.
 - Assign each point to the nearest centroid.
 - Update each centroid based on the mean of points assigned to it.

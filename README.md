@@ -232,6 +232,9 @@ Main concepts:
 - Border point: A point near a core point but not dense enough to be a core itself
 - Noise: A point that doesn’t belong to any cluster
 
+<p align="center"><img src="Images/dbscan_point_desc.webp" alt="dbscan_point_desc" width="50%"/></p>
+
+
 Steps
 - Start with a point: Pick any unvisited point from the dataset and find its neighbors.
    - A neighbor is any point whose distance from the current point is less than or equal to ε (epsilon).
@@ -240,10 +243,10 @@ Steps
    - Otherwise, treat it as noise temporarily (it may later become a border point).
 - Expand the cluster:
    - For the core point and its neighbors, loop through each neighbor and add them to the current cluster if they are density-reachable.
+
+  <p align="center"><img src="Images/dbscan_view.webp" alt="dbscan_view" width="50%"/></p>
 - Mark points as visited:
    - Each point is marked as visited when processed to prevent infinite or repeated loops during cluster expansion.
 - Repeat the process:
    - Continue this process until all points in the dataset have been visited and assigned to a cluster or marked as noise.
-
-
-
+     <p align="center"><img src="Images/dbscan_example.webp" alt="k-means" width="50%"/></p>

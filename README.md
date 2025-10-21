@@ -214,3 +214,36 @@ Disadvantages:
 - Computationally expensive for large datasets (especially the PAM algorithm).
 - Requires specifying the number of clusters (k) in advance.
 - May still converge to local minima, depending on initial medoid selection.
+
+## Density-Based Methods
+
+Centroid-based clustering methods, like K-Means, are limited because they can only detect spherical or circular clusters. They often fail when clusters have arbitrary or irregular shapes. To address this limitation, density-based clustering methods were introduced.
+
+In density-based approaches, instead of just looking at distance, we consider the density of points around a particular location. Clusters are formed in regions where points are densely packed, while sparse regions are treated as noise or outliers.
+
+### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+
+DBSCAN is a popular density-based clustering algorithm. The key idea is simple: group points that are close together and have enough neighbors.
+
+Main concepts:
+- ε (epsilon): How close points need to be to be considered neighbors
+- MinPts: Minimum number of points required to form a dense area
+- Core point: A point with at least MinPts neighbors → forms the center of a cluster
+- Border point: A point near a core point but not dense enough to be a core itself
+- Noise: A point that doesn’t belong to any cluster
+
+Steps
+- Start with a point: Pick any unvisited point from the dataset and find its neighbors.
+   - A neighbor is any point whose distance from the current point is less than or equal to ε (epsilon).
+- Determine the point type:
+   - If the number of neighbors (including the current point) is greater than or equal to MinPts, mark the point as a core point.
+   - Otherwise, treat it as noise temporarily (it may later become a border point).
+- Expand the cluster:
+   - For the core point and its neighbors, loop through each neighbor and add them to the current cluster if they are density-reachable.
+- Mark points as visited:
+   - Each point is marked as visited when processed to prevent infinite or repeated loops during cluster expansion.
+- Repeat the process:
+   - Continue this process until all points in the dataset have been visited and assigned to a cluster or marked as noise.
+
+
+

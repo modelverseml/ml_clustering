@@ -53,7 +53,7 @@ There are numerous algorithms available to solve clustering problems, and each u
     - Spectral Clustering – uses graph theory and eigenvalues to cluster data in complex structures.
     
 ## Centroid-Based Methods
-
+---
 ### K-Means 
 
 K-Means is straightforward once you understand some basic math. The algorithm partitions data into K clusters by iteratively updating cluster centroids.
@@ -137,7 +137,7 @@ Disadvantages
 - Feature scaling matters: K-Means relies on distance measures, so features with larger scales can dominate the clustering unless data is standardized.
 - Sensitive to noise: High levels of noise in data can reduce clustering quality.
 
-
+---
 ### Mini Batch K-Means 
 
 Mini-Batch K-Means is a variant of the traditional K-Means algorithm designed to handle large-scale datasets efficiently.
@@ -151,7 +151,7 @@ Key points :
 - Uses random mini-batches to update centroids, improving scalability.
 - Inherits the same disadvantages as K-Means (e.g., need to predefine k, sensitivity to initialization, and potential convergence to local minima).
 - [View Mini-Batch K-Means manual code implementation](kmeans.py)
-
+---
 ### K-Means++
 
 K-Means++ is an improved version of the standard K-Means algorithm that focuses on selecting better initial centroids to achieve more stable and accurate clustering results.
@@ -181,7 +181,7 @@ K-Means++ only improves the initialization step of K-Means.
 
 It still inherits all the disadvantages of the standard K-Means algorithm
 
-
+---
 ### K-Medoids
 
 K-Medoids is a clustering algorithm similar to K-Means, but instead of using the mean of cluster points as the center, it uses an actual data point (called a medoid) as the cluster representative.
@@ -221,6 +221,7 @@ Centroid-based clustering methods, like K-Means, are limited because they can on
 
 In density-based approaches, instead of just looking at distance, we consider the density of points around a particular location. Clusters are formed in regions where points are densely packed, while sparse regions are treated as noise or outliers.
 
+---
 ### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
 
 DBSCAN is a popular density-based clustering algorithm. The key idea is simple: group points that are close together and have enough neighbors.
@@ -261,13 +262,14 @@ $$
 
 - Expand the cluster:
    - For the core point and its neighbors, loop through each neighbor and add them to the current cluster if they are density-reachable.
-
   <p align="center"><img src="Images/dbscan_view.webp" alt="dbscan_view" width="50%"/></p>
+  
 - Mark points as visited:
    - Each point is marked as visited when processed to prevent infinite or repeated loops during cluster expansion.
 - Repeat the process:
    - Continue this process until all points in the dataset have been visited and assigned to a cluster or marked as noise.
-     <p align="center"><img src="Images/dbscan_example.webp" alt="k-means" width="50%"/></p>
+
+  <p align="center"><img src="Images/dbscan_difference.png" alt="dbscan_view" width="50%"/></p>
 
 Advantages
 - **No need to specify number of clusters (k)** : Unlike K-Means, DBSCAN automatically detects clusters of varying shapes.
@@ -282,8 +284,8 @@ Disadvantages
 - **Not suitable for high-dimensional data** : Distance metrics like Euclidean become less meaningful in high-dimensional spaces (**curse of dimensionality**).
 - **Computational complexity** : For large datasets, DBSCAN can be slower compared to simpler algorithms like K-Means, especially if not optimized with spatial indexing.
 - **Cannot cluster well-separated uniform-density clusters** : If clusters are widely separated but of similar density, DBSCAN may merge them incorrectly or leave some points as noise.
-
-## OPTICS - Ordering Points to Identify the Clustering Structure
+---
+### OPTICS - Ordering Points to Identify the Clustering Structure
 
 OPTICS is an advanced density-based clustering algorithm that improves upon DBSCAN. While DBSCAN works well, it has some limitations
 - It is highly sensitive to parameter choices like ε (epsilon) and MinPts.
@@ -313,6 +315,11 @@ $$
 $$
 \text{reach-dist(p,q) = max(core-dist(p),dist(p,q))}
 $$
+
+<p align="center">
+ <img src="Images/optics_par_view.webp" alt="optics view" width="45%"/>
+ <img src="Images/optics_view.webp.webp" alt="optics view" width="45%"/>
+</p>
 
 OPTICS Algorithm Steps : 
 
@@ -347,7 +354,8 @@ OPTICS Algorithm Steps :
    - Points separated by large reachability distances form different clusters
 
 
-Advantages of OPTICS
+
+**Advantages**
 - **Handles Varying Density Clusters** : Unlike DBSCAN, OPTICS can identify clusters with different densities because it does not use a fixed ε value.
 - **Less Sensitive to Parameter Settings** : OPTICS reduces the dependency on selecting a perfect ε value, making it more stable than DBSCAN.
 - **Produces an Ordered Reachability Plot** : Instead of forcing clusters, OPTICS generates a reachability plot that visually shows the clustering structure.
@@ -355,9 +363,110 @@ Advantages of OPTICS
 - **Flexible Cluster Extraction** : Clusters can be formed later using **different reachability thresholds**, giving flexibility to the user.
 
 
-Disadvantages of OPTICS
+**Disadvantages**
 - **More Computationally Expensive** : Slower than DBSCAN due to additional ordering operations, especially on large datasets.
 - **More Complex to Understand and Implement** : Requires understanding of reachability distance, core distance, and reachability plots.
 - **No Direct Cluster Output** : Unlike DBSCAN, OPTICS does not directly produce clusters. Clusters need to be extracted **afterward** using a reachability threshold.
 - **Performance Depends on Distance Metric** : Like DBSCAN, OPTICS struggles in **high-dimensional data** due to the curse of dimensionality.
 - **Memory Usage** : Stores ordering and reachability distances for all points, which can consume more memory than DBSCAN.
+
+---
+### HDBSCAN – Hierarchical Density-Based Spatial Clustering of Applications with Noise
+
+HDBSCAN is an improved version of DBSCAN that can find clusters of **varying densities** and **does not require epsilon (ε)**. It builds a **hierarchy of clusters** and selects the most stable ones based on density. Unlike DBSCAN, which struggles with different density clusters and parameter sensitivity, HDBSCAN is more robust and gives better clustering results.
+
+
+**Why HDBSCAN?**
+- DBSCAN fails with clusters of **varying densities**.
+- It is **sensitive to ε (epsilon)**.
+- **Too many noise points** in DBSCAN.
+- Cannot discover **hierarchical structure**.
+- HDBSCAN **removes ε entirely** and uses **density hierarchy**.
+
+
+**Important Concepts Used in HDBSCAN**
+1. Core Distance
+   - For a point **p**, the core distance is defined as:
+ 
+ $$
+ \text{core-dist}(p)=\text{distance to min\\_samples-th nearest neighbor of } p
+ $$
+
+- Measures how dense the region around p is.
+- Small core-dist → dense area
+- Large core-dist → sparse area
+
+
+2. Mutual Reachability Distance
+    - To avoid incorrectly linking sparse areas, HDBSCAN uses:
+
+$$
+\text{mreach-dist}(p, q) = \max(\text{core-dist}(p),\ \text{core-dist}(q),\ d(p,q))
+$$
+
+- Makes clustering based on **relative density**.
+- Prevents the "single-link effect" from DBSCAN.
+
+3. Cluster Stability (Mathematical Measure)
+    - Clusters are chosen based on **stability**, defined as:
+
+$$
+\text{Stability}(C) = \sum_{p \in C} \big( \lambda_{\text{birth}}(p) - \lambda_{\text{death}}(p) \big)
+$$
+
+Where:
+
+$$
+\lambda = \frac{1}{\text{mreach-dist}}
+$$
+
+- Clusters that **survive longer** across densities are more **stable**.
+- Less stable clusters are treated as **noise**.
+
+
+**HDBSCAN Algorithm Steps**
+
+1. **Initialization**
+   - Choose:
+     - `min_samples` → Minimum number of neighbors to form a dense region.
+     - `min_cluster_size` → Minimum number of points to form a cluster.
+
+2. **Compute Core Distance**
+   - For each point p, compute its core-distance:
+     - Distance to its min_samples-th nearest neighbor.
+
+3. **Compute Mutual Reachability Distance**
+   - Modify all pairwise distances using:
+     - `mreach-dist(p, q) = max(core-dist(p), core-dist(q), dist(p,q))`
+
+4. **Build Minimum Spanning Tree (MST)**
+   - Construct a Minimum Spanning Tree using mutual reachability distances as edge weights.
+
+5. **Construct Cluster Hierarchy**
+   - Sort MST edges from **smallest to largest**.
+   - Gradually remove the **largest edges** to form **clusters at multiple density levels**.
+
+6. **Condense the Tree**
+   - Remove clusters smaller than `min_cluster_size`.
+   - Track how long each cluster persists (birth → death density level).
+
+7. **Extract Final Clusters**
+   - Select **most stable clusters**.
+   - Points not belonging to any stable cluster are **noise (-1)**.
+   
+<p align="center"><img src="Images/hdbscan_view.png" alt="hdbscan" width="50%"/></p>
+
+**Advantages**
+- **No epsilon (ε) required**.
+- Detects clusters with **varying densities**.
+- **Better noise handling** than DBSCAN.
+- Builds a **hierarchical clustering structure**.
+- Produces **stable and meaningful clusters**.
+- Works well with **real-world noisy data**.
+
+**Disadvantages**
+- More **computationally expensive** than DBSCAN.
+- **Complex to understand** mathematically.
+- Struggles with **high-dimensional data**.
+- Needs **parameter tuning** (`min_samples`, `min_cluster_size`).
+- No **reachability plot visualization** like OPTICS.

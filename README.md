@@ -238,9 +238,27 @@ Main concepts:
 Steps
 - Start with a point: Pick any unvisited point from the dataset and find its neighbors.
    - A neighbor is any point whose distance from the current point is less than or equal to ε (epsilon).
+     
+$$
+{N_ε}\(x\) = \\{ y \in D | \text{dist}\(x,y\) \le  ε \\}
+$$
+
+$$
+\text{dist}\(x,y\) = \sqrt{\sum_{i=1}^n \( x_i - y_i\)^2}
+$$
+
 - Determine the point type:
    - If the number of neighbors (including the current point) is greater than or equal to MinPts, mark the point as a core point.
    - Otherwise, treat it as noise temporarily (it may later become a border point).
+ 
+$$
+|N_x\(x\)| \ge \text{MinPts} \quad \Rightarrow \text{ x is core}
+$$
+
+$$
+\text {x → q if x is core and } q \in {N_ε}\(x\)
+$$
+
 - Expand the cluster:
    - For the core point and its neighbors, loop through each neighbor and add them to the current cluster if they are density-reachable.
 
@@ -250,3 +268,109 @@ Steps
 - Repeat the process:
    - Continue this process until all points in the dataset have been visited and assigned to a cluster or marked as noise.
      <p align="center"><img src="Images/dbscan_example.webp" alt="k-means" width="50%"/></p>
+
+Advantages
+
+1. **No need to specify number of clusters (k)**
+   - Unlike K-Means, DBSCAN automatically detects clusters of varying shapes.
+2. **Can find arbitrarily shaped clusters**
+   - Works well with non-linear or irregular cluster shapes, e.g., crescent or circular clusters.
+3. **Handles noise/outliers**
+   - Points that do not belong to any cluster are labeled as noise, making the clustering robust.  
+4. **Clusters based on density, not distance alone**
+   - Works well when clusters have **dense regions separated by sparse regions**.
+5. **No requirement for initial centroids**
+   - Unlike K-Means or K-Medoids, DBSCAN does not require selecting initial points.
+
+Disadvantages
+1. **Difficulty with varying densities**
+   - DBSCAN struggles if clusters have very different densities, as a single ε may not fit all clusters.
+2. **Parameter sensitivity**
+   - Results heavily depend on **ε (epsilon)** and **MinPts**. Choosing wrong values may produce poor clusters.
+3. **Not suitable for high-dimensional data**
+   - Distance metrics like Euclidean become less meaningful in high-dimensional spaces (**curse of dimensionality**).
+4. **Computational complexity**
+   - For large datasets, DBSCAN can be slower compared to simpler algorithms like K-Means, especially if not optimized with spatial indexing.
+5. **Cannot cluster well-separated uniform-density clusters**
+   - If clusters are widely separated but of similar density, DBSCAN may merge them incorrectly or leave some points as noise.
+
+## OPTICS - Ordering Points to Identify the Clustering Structure
+
+OPTICS is an advanced density-based clustering algorithm that improves upon DBSCAN. While DBSCAN works well, it has some limitations
+- It is highly sensitive to parameter choices like ε (epsilon) and MinPts.
+- A slight change in these parameters can produce completely different clusters.
+- DBSCAN uses a single ε value for the entire dataset, which makes it unable to detect clusters with varying densities.
+
+OPTICS overcomes these limitations by ordering data points to represent the clustering structure based on density, without requiring a fixed ε value.
+
+Key Concepts in OPTICS
+
+OPTICS uses two important distance measures:
+
+1. Core Distance:
+    - For a point p, the core distance is defined as:
+   
+$$
+\text{core-dist}(p) =
+\begin{cases} 
+\text{distance to MinPts-th nearest neighbor}, & \text{if } |N_\varepsilon(p)| \ge \text{MinPts} \\
+\text{undefined}, & \text{otherwise}
+\end{cases}
+$$
+  - If point p has enough neighbors (at least MinPts within ε), it is a core point.
+  - Otherwise, its core distance is undefined.
+
+2. Reachability Distance :
+    - The reachability distance of point q from point p is:
+
+$$
+\text{reach-dist(p,q) = max(core-dist(p),dist(p,q))}
+$$
+
+OPTICS Algorithm Steps : 
+
+1. Initialization
+   - Mark all points as unprocessed.
+   - For each point, initialize:
+     - Core distance → unknown initially
+     - Reachability distance → ∞ (infinity)
+2. Pick a starting point
+   - Choose any unprocessed point p.
+   - Find its ε-neighborhood (neighbors within ε).
+     - Note: ε here is not a fixed clustering threshold like in DBSCAN. It is only used to define the search boundary for neighbors.
+
+3. Compute Core Distance
+   - If |Nε(p)| ≥ MinPts, p is a core point.
+   - Compute its core distance as the distance to its MinPts-th nearest neighbor.
+
+4. Update Reachability Distances
+   - For every unprocessed neighbor q of p:
+    - Compute reach-dist(p, q)
+    - Update q's reachability distance if the new one is smaller
+
+5. Priority Ordering
+   - Sort the neighbors by increasing reachability distance
+   - Store them in an order list
+
+6. Expand Clusters
+   - Continue processing the next point with the smallest reachability distance
+   - This expands all density-reachable regions
+7. Extract Clusters
+   - After ordering all points, define clusters by selecting a reachability distance threshold
+   - Points separated by large reachability distances form different clusters
+
+
+Advantages of OPTICS
+- **Handles Varying Density Clusters** : Unlike DBSCAN, OPTICS can identify clusters with different densities because it does not use a fixed ε value.
+- **Less Sensitive to Parameter Settings** : OPTICS reduces the dependency on selecting a perfect ε value, making it more stable than DBSCAN.
+- **Produces an Ordered Reachability Plot** : Instead of forcing clusters, OPTICS generates a reachability plot that visually shows the clustering structure.
+- **Automatically Detects Noise** : Similar to DBSCAN, OPTICS identifies outliers and separates them from meaningful clusters.
+- **Flexible Cluster Extraction** : Clusters can be formed later using **different reachability thresholds**, giving flexibility to the user.
+
+
+Disadvantages of OPTICS
+- **More Computationally Expensive** : Slower than DBSCAN due to additional ordering operations, especially on large datasets.
+- **More Complex to Understand and Implement** : Requires understanding of reachability distance, core distance, and reachability plots.
+- **No Direct Cluster Output** : Unlike DBSCAN, OPTICS does not directly produce clusters. Clusters need to be extracted **afterward** using a reachability threshold.
+- **Performance Depends on Distance Metric** : Like DBSCAN, OPTICS struggles in **high-dimensional data** due to the curse of dimensionality.
+- **Memory Usage** : Stores ordering and reachability distances for all points, which can consume more memory than DBSCAN.

@@ -567,3 +567,65 @@ $$
 | Sensitivity to Parameters     | High                       | Medium                               | Low                           |
 | Automatically Determines Clusters | No                     | No                                   | Yes                           |
 | Computational Complexity      | O(n log n) – O(n²)         | O(n log n) – O(n²)                   | O(n log n) – O(n²)            |
+
+<br><br><br><br>
+## Hierarchical Methods
+
+Hierarchical clustering is one of the simplest and most intuitive clustering algorithms.  
+
+In this approach, clusters are built using either a **top-down** (divisive) or **bottom-up** (agglomerative) method.  
+Clusters are visualized using a tree diagram called a **dendrogram**.  
+
+- By cutting the dendrogram at a certain level, the clusters present at that cut become the **final clusters**.  
+
+<p align="center"><img src="Images/dendogram.webp" alt="dendogram" width="80%"/></p>
+
+
+## Agglomerative Approach (Bottom-up)
+
+**Agglomerative clustering is a bottom-up method**:
+
+- Each data point starts as its **own cluster**.  
+- At each step, the **two closest clusters** are merged based on a distance metric.  
+- This process continues until all points are merged into a single cluster, or a stopping criterion (e.g., desired number of clusters) is reached.  
+
+
+To measure the **similarity between clusters**, different **linkage methods** are used:
+
+1. Single Linkage (Nearest Neighbor):
+   - Distance between the two clusters is the distance between their closest points
+
+$$
+D_{single}\(A,B\) = \min_{a \in B, b \in B} d(a,b)
+$$
+
+2. Complete Linkage(Farthest Neighbor):
+    - Distance between the two clusters is the distance between their fathest points
+
+$$
+D_{complete}\(A,B\) = \max_{a \in B, b \in B} d(a,b)
+$$
+
+3. Average Linkage:
+    - Distance between two clusters is the average of all pairwise distances.
+
+$$
+D_{average}\(A,B\) = \frac{1}{|A||B|}\sum_{a \in A}\sum_{b \in B} d(a,b)
+$$
+
+4. Centroid Linkage
+   - Distance between two clusters is the distance between their centroids
+
+   
+$$
+D_{centroid}\(A,B\) = d(\bar{a},\bar{b}), \quad \bar{a} = \frac{1}{|A|}\sum_{a \in A}a, \quad \bar{b} = \frac{1}{|B|}\sum_{b \in B}b
+$$
+
+5. Ward’s Linkage (Minimum Variance Method)
+    - Merges clusters to minimize the increase in total within-cluster variance after merging.
+
+$$
+D_{ward}\(A,B\) = \frac{|A||B|}{|A|+|B|} || \bar{a} - \bar{b}||^2
+$$
+
+

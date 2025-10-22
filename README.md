@@ -270,29 +270,18 @@ $$
      <p align="center"><img src="Images/dbscan_example.webp" alt="k-means" width="50%"/></p>
 
 Advantages
-
-1. **No need to specify number of clusters (k)**
-   - Unlike K-Means, DBSCAN automatically detects clusters of varying shapes.
-2. **Can find arbitrarily shaped clusters**
-   - Works well with non-linear or irregular cluster shapes, e.g., crescent or circular clusters.
-3. **Handles noise/outliers**
-   - Points that do not belong to any cluster are labeled as noise, making the clustering robust.  
-4. **Clusters based on density, not distance alone**
-   - Works well when clusters have **dense regions separated by sparse regions**.
-5. **No requirement for initial centroids**
-   - Unlike K-Means or K-Medoids, DBSCAN does not require selecting initial points.
+- **No need to specify number of clusters (k)** : Unlike K-Means, DBSCAN automatically detects clusters of varying shapes.
+- **Can find arbitrarily shaped clusters** : Works well with non-linear or irregular cluster shapes, e.g., crescent or circular clusters.
+- **Handles noise/outliers** : Points that do not belong to any cluster are labeled as noise, making the clustering robust.  
+- **Clusters based on density, not distance alone** : Works well when clusters have **dense regions separated by sparse regions**.
+- **No requirement for initial centroids** : Unlike K-Means or K-Medoids, DBSCAN does not require selecting initial points.
 
 Disadvantages
-1. **Difficulty with varying densities**
-   - DBSCAN struggles if clusters have very different densities, as a single ε may not fit all clusters.
-2. **Parameter sensitivity**
-   - Results heavily depend on **ε (epsilon)** and **MinPts**. Choosing wrong values may produce poor clusters.
-3. **Not suitable for high-dimensional data**
-   - Distance metrics like Euclidean become less meaningful in high-dimensional spaces (**curse of dimensionality**).
-4. **Computational complexity**
-   - For large datasets, DBSCAN can be slower compared to simpler algorithms like K-Means, especially if not optimized with spatial indexing.
-5. **Cannot cluster well-separated uniform-density clusters**
-   - If clusters are widely separated but of similar density, DBSCAN may merge them incorrectly or leave some points as noise.
+- **Difficulty with varying densities** : DBSCAN struggles if clusters have very different densities, as a single ε may not fit all clusters.
+- **Parameter sensitivity** : Results heavily depend on **ε (epsilon)** and **MinPts**. Choosing wrong values may produce poor clusters.
+- **Not suitable for high-dimensional data** : Distance metrics like Euclidean become less meaningful in high-dimensional spaces (**curse of dimensionality**).
+- **Computational complexity** : For large datasets, DBSCAN can be slower compared to simpler algorithms like K-Means, especially if not optimized with spatial indexing.
+- **Cannot cluster well-separated uniform-density clusters** : If clusters are widely separated but of similar density, DBSCAN may merge them incorrectly or leave some points as noise.
 
 ## OPTICS - Ordering Points to Identify the Clustering Structure
 
@@ -303,12 +292,10 @@ OPTICS is an advanced density-based clustering algorithm that improves upon DBSC
 
 OPTICS overcomes these limitations by ordering data points to represent the clustering structure based on density, without requiring a fixed ε value.
 
-Key Concepts in OPTICS
-
-OPTICS uses two important distance measures:
+**OPTICS uses two important distance measures**:
 
 1. Core Distance:
-    - For a point p, the core distance is defined as:
+   - For a point p, the core distance is defined as:
    
 $$
 \text{core-dist}(p) =
@@ -317,8 +304,8 @@ $$
 \text{undefined}, & \text{otherwise}
 \end{cases}
 $$
-  - If point p has enough neighbors (at least MinPts within ε), it is a core point.
-  - Otherwise, its core distance is undefined.
+   - If point p has enough neighbors (at least MinPts within ε), it is a core point.
+   - Otherwise, its core distance is undefined.
 
 2. Reachability Distance :
     - The reachability distance of point q from point p is:

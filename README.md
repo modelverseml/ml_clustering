@@ -269,7 +269,7 @@ $$
 - Repeat the process:
    - Continue this process until all points in the dataset have been visited and assigned to a cluster or marked as noise.
 
-  <p align="center"><img src="Images/dbscan_difference.png" alt="dbscan_view" width="50%"/></p>
+  <p align="center"><img src="Images/dbscan_difference.png" alt="dbscan_view" width="80%"/></p>
 
 Advantages
 - **No need to specify number of clusters (k)** : Unlike K-Means, DBSCAN automatically detects clusters of varying shapes.
@@ -318,7 +318,7 @@ $$
 
 <p align="center">
  <img src="Images/optics_par_view.webp" alt="optics view" width="45%"/>
- <img src="Images/optics_view.webp.webp" alt="optics view" width="45%"/>
+ <img src="Images/optics_view.webp" alt="optics view" width="45%"/>
 </p>
 
 OPTICS Algorithm Steps : 
@@ -454,7 +454,7 @@ $$
    - Select **most stable clusters**.
    - Points not belonging to any stable cluster are **noise (-1)**.
    
-<p align="center"><img src="Images/hdbscan_view.png" alt="hdbscan" width="50%"/></p>
+<p align="center"><img src="Images/hdbscan_view.png" alt="hdbscan" width="80%"/></p>
 
 **Advantages**
 - **No epsilon (ε) required**.

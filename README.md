@@ -17,7 +17,7 @@ In short, clustering helps us make sense of unlabeled data by organizing it into
 
 There are numerous algorithms available to solve clustering problems, and each uses a different approach to group data points. Below are some of the most commonly used clustering algorithms categorized by their underlying method.
 
-
+<br><br>
 ## Clustering Algorithms
 
 - Centroid-Based Methods
@@ -51,14 +51,17 @@ There are numerous algorithms available to solve clustering problems, and each u
     - Affinity Propagation – identifies exemplars among data points and forms clusters around them.
     - BIRCH (Balanced Iterative Reducing and Clustering using Hierarchies) – efficient for large datasets.
     - Spectral Clustering – uses graph theory and eigenvalues to cluster data in complex structures.
-    
+      
+<br><br>
 ## Centroid-Based Methods
----
-### K-Means 
 
+### K-Means 
+---
 K-Means is straightforward once you understand some basic math. The algorithm partitions data into K clusters by iteratively updating cluster centroids.
 
-Steps : 
+<br>
+
+**Steps** : 
 - Randomly select K samples as initial centroids. 
 - Compute the distance of each data point to all K centroids.
 - Assign each point to the nearest centroid.
@@ -69,6 +72,9 @@ Steps :
 <p align="center">
 <img src="Images/k-means.webp" alt="k-means" width="50%"/>
 </p>
+
+<br>
+
 
 Lets see mathematical view
 
@@ -123,8 +129,10 @@ $$
 
 - The algorithm iterates assignment → update until J converges (changes very little) or cluster assignments stop changing
 
+<br>
 
-Disadvantages
+
+**Disadvantages**
 - Requires specifying K: You must decide the number of clusters beforehand, which may not be obvious for real-world data.
 - Sensitive to initial centroids: Poor initialization can lead to suboptimal clustering or different results on multiple runs.
 <p align="center"><img src="Images/k-means_poor_initialisation.webp" alt="k-means" width="50%"/></p>
@@ -137,23 +145,29 @@ Disadvantages
 - Feature scaling matters: K-Means relies on distance measures, so features with larger scales can dominate the clustering unless data is standardized.
 - Sensitive to noise: High levels of noise in data can reduce clustering quality.
 
----
-### Mini Batch K-Means 
+<br><br>
 
+### Mini Batch K-Means 
+---
 Mini-Batch K-Means is a variant of the traditional K-Means algorithm designed to handle large-scale datasets efficiently.
 
 When we have more than a million records, the standard K-Means algorithm becomes computationally expensive because it needs to calculate the distance between every data point and each centroid during every iteration. This leads to excessive computation time and memory usage, making K-Means less feasible for big data applications.
 
 To overcome this, Mini-Batch K-Means introduces the concept of mini-batches. Instead of using the entire dataset to update centroids in each iteration, it randomly selects a small batch of samples. The centroids are then updated based on these batches, and the process continues iteratively with new random batches. This approach significantly reduces computation time while still producing results similar to the standard K-Means algorithm.
 
-Key points : 
+<br>
+
+
+**Key points** : 
 - Computationally efficient compared to standard K-Means.
 - Uses random mini-batches to update centroids, improving scalability.
 - Inherits the same disadvantages as K-Means (e.g., need to predefine k, sensitivity to initialization, and potential convergence to local minima).
 - [View Mini-Batch K-Means manual code implementation](kmeans.py)
----
-### K-Means++
 
+<br><br>
+
+### K-Means++
+---
 K-Means++ is an improved version of the standard K-Means algorithm that focuses on selecting better initial centroids to achieve more stable and accurate clustering results.
 
 In the traditional K-Means algorithm, the initial centroids are chosen randomly from the dataset. This randomness can lead to poor clustering results — for example, if the selected centroids are very close to each other, the resulting clusters may not represent the data distribution effectively.
@@ -161,7 +175,10 @@ In the traditional K-Means algorithm, the initial centroids are chosen randomly 
 K-Means++ solves this problem by choosing the initial centroids in a more intelligent and distance-aware way. It ensures that centroids are as far apart as possible, which leads to faster convergence and better cluster separation.
 
 
-Steps to Select Initial Centroids:
+<br>
+
+
+**Steps to Select Initial Centroids**:
 - Select one random sample from the dataset as the first centroid.
 - For each data point ${x_i}$, compute the distance ${D(x_i)}$ to the nearest already chosen centroid
 
@@ -181,13 +198,17 @@ K-Means++ only improves the initialization step of K-Means.
 
 It still inherits all the disadvantages of the standard K-Means algorithm
 
----
-### K-Medoids
+<br><br>
 
+### K-Medoids
+---
 K-Medoids is a clustering algorithm similar to K-Means, but instead of using the mean of cluster points as the center, it uses an actual data point (called a medoid) as the cluster representative.
 This makes K-Medoids more robust to noise and outliers.
 
-Steps:
+<br>
+
+
+**Steps**:
 
 - Select k random medoids from the dataset as initial centers.
 - Assign each data point to the nearest medoid based on a distance metric (e.g., Euclidean or Manhattan distance).
@@ -205,15 +226,39 @@ $$
 - Repeat steps 2–4 until no change in medoids occurs or the cost function converges.
 - [View K-Medoids manual code implementation](kmedoids.py)
 
-Advantages : 
+
+<br>
+
+
+**Advantages** : 
 - Works well with non-Euclidean and categorical data.
 - Less sensitive to outliers compared to K-Means.
 - Produces more stable clusters because medoids are actual points.
 
-Disadvantages:
+<br>
+
+
+**Disadvantages**:
 - Computationally expensive for large datasets (especially the PAM algorithm).
 - Requires specifying the number of clusters (k) in advance.
 - May still converge to local minima, depending on initial medoid selection.
+
+<br><br>
+
+| Feature                          | K-Means                         | K-Means++                        | Mini-Batch K-Means              | K-Medoids                        |
+|---------------------------------|---------------------------------|---------------------------------|---------------------------------|----------------------------------|
+| Cluster Shape                    | Spherical / convex             | Spherical / convex               | Spherical / convex               | Spherical / convex                  |
+| Handles Noise                    | No                              | No                               | No                               | Yes                              |
+| Initialization                   | Random                         | Smart (max distance based)       | Random / K-Means++               | Random / heuristic               |
+| Speed / Scalability              | Medium                          | Slightly slower than K-Means     | Fast / scalable for large data   | Slower than K-Means              |
+| Sensitivity to Initialization    | High                            | Low                              | Medium                            | Low                              |
+| Memory Usage                      | Moderate                        | Moderate                         | Low                               | High                             |
+| Robustness to Outliers           | Low                             | Low                              | Low                               | High                             |
+| Number of Clusters (K) Required | Yes                             | Yes                              | Yes                               | Yes                              |
+| Suitable for Large Datasets      | Moderate                        | Moderate                         | Yes                               | No                               |
+| Algorithm Type                   | Partitioning                   | Partitioning                     | Partitioning                     | Partitioning (Medoid-based)      |
+
+<br><br><br><br>
 
 ## Density-Based Methods
 
@@ -221,12 +266,15 @@ Centroid-based clustering methods, like K-Means, are limited because they can on
 
 In density-based approaches, instead of just looking at distance, we consider the density of points around a particular location. Clusters are formed in regions where points are densely packed, while sparse regions are treated as noise or outliers.
 
----
-### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+<br><br>
 
+### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+---
 DBSCAN is a popular density-based clustering algorithm. The key idea is simple: group points that are close together and have enough neighbors.
 
-Main concepts:
+<br>
+
+**Main concepts**:
 - ε (epsilon): How close points need to be to be considered neighbors
 - MinPts: Minimum number of points required to form a dense area
 - Core point: A point with at least MinPts neighbors → forms the center of a cluster
@@ -235,8 +283,10 @@ Main concepts:
 
 <p align="center"><img src="Images/dbscan_point_desc.webp" alt="dbscan_point_desc" width="50%"/></p>
 
+<br>
 
-Steps
+
+**Steps** :
 - Start with a point: Pick any unvisited point from the dataset and find its neighbors.
    - A neighbor is any point whose distance from the current point is less than or equal to ε (epsilon).
      
@@ -271,28 +321,39 @@ $$
 
   <p align="center"><img src="Images/dbscan_difference.png" alt="dbscan_view" width="80%"/></p>
 
-Advantages
+<br>
+
+
+**Advantages**
 - **No need to specify number of clusters (k)** : Unlike K-Means, DBSCAN automatically detects clusters of varying shapes.
 - **Can find arbitrarily shaped clusters** : Works well with non-linear or irregular cluster shapes, e.g., crescent or circular clusters.
 - **Handles noise/outliers** : Points that do not belong to any cluster are labeled as noise, making the clustering robust.  
 - **Clusters based on density, not distance alone** : Works well when clusters have **dense regions separated by sparse regions**.
 - **No requirement for initial centroids** : Unlike K-Means or K-Medoids, DBSCAN does not require selecting initial points.
 
-Disadvantages
+<br>
+
+
+**Disadvantages**
 - **Difficulty with varying densities** : DBSCAN struggles if clusters have very different densities, as a single ε may not fit all clusters.
 - **Parameter sensitivity** : Results heavily depend on **ε (epsilon)** and **MinPts**. Choosing wrong values may produce poor clusters.
 - **Not suitable for high-dimensional data** : Distance metrics like Euclidean become less meaningful in high-dimensional spaces (**curse of dimensionality**).
 - **Computational complexity** : For large datasets, DBSCAN can be slower compared to simpler algorithms like K-Means, especially if not optimized with spatial indexing.
 - **Cannot cluster well-separated uniform-density clusters** : If clusters are widely separated but of similar density, DBSCAN may merge them incorrectly or leave some points as noise.
----
-### OPTICS - Ordering Points to Identify the Clustering Structure
 
+<br><br>
+
+### OPTICS - Ordering Points to Identify the Clustering Structure
+---
 OPTICS is an advanced density-based clustering algorithm that improves upon DBSCAN. While DBSCAN works well, it has some limitations
 - It is highly sensitive to parameter choices like ε (epsilon) and MinPts.
 - A slight change in these parameters can produce completely different clusters.
 - DBSCAN uses a single ε value for the entire dataset, which makes it unable to detect clusters with varying densities.
 
 OPTICS overcomes these limitations by ordering data points to represent the clustering structure based on density, without requiring a fixed ε value.
+
+<br>
+
 
 **OPTICS uses two important distance measures**:
 
@@ -321,7 +382,10 @@ $$
  <img src="Images/optics_view.webp" alt="optics view" width="45%"/>
 </p>
 
-OPTICS Algorithm Steps : 
+<br>
+
+
+**OPTICS Algorithm Steps** : 
 
 1. Initialization
    - Mark all points as unprocessed.
@@ -354,6 +418,8 @@ OPTICS Algorithm Steps :
    - Points separated by large reachability distances form different clusters
 
 
+<br>
+
 
 **Advantages**
 - **Handles Varying Density Clusters** : Unlike DBSCAN, OPTICS can identify clusters with different densities because it does not use a fixed ε value.
@@ -363,6 +429,9 @@ OPTICS Algorithm Steps :
 - **Flexible Cluster Extraction** : Clusters can be formed later using **different reachability thresholds**, giving flexibility to the user.
 
 
+<br>
+
+
 **Disadvantages**
 - **More Computationally Expensive** : Slower than DBSCAN due to additional ordering operations, especially on large datasets.
 - **More Complex to Understand and Implement** : Requires understanding of reachability distance, core distance, and reachability plots.
@@ -370,10 +439,14 @@ OPTICS Algorithm Steps :
 - **Performance Depends on Distance Metric** : Like DBSCAN, OPTICS struggles in **high-dimensional data** due to the curse of dimensionality.
 - **Memory Usage** : Stores ordering and reachability distances for all points, which can consume more memory than DBSCAN.
 
----
-### HDBSCAN – Hierarchical Density-Based Spatial Clustering of Applications with Noise
+<br><br>
 
+### HDBSCAN – Hierarchical Density-Based Spatial Clustering of Applications with Noise
+---
 HDBSCAN is an improved version of DBSCAN that can find clusters of **varying densities** and **does not require epsilon (ε)**. It builds a **hierarchy of clusters** and selects the most stable ones based on density. Unlike DBSCAN, which struggles with different density clusters and parameter sensitivity, HDBSCAN is more robust and gives better clustering results.
+
+
+<br>
 
 
 **Why HDBSCAN?**
@@ -382,6 +455,9 @@ HDBSCAN is an improved version of DBSCAN that can find clusters of **varying den
 - **Too many noise points** in DBSCAN.
 - Cannot discover **hierarchical structure**.
 - HDBSCAN **removes ε entirely** and uses **density hierarchy**.
+
+
+<br>
 
 
 **Important Concepts Used in HDBSCAN**
@@ -423,6 +499,8 @@ $$
 - Clusters that **survive longer** across densities are more **stable**.
 - Less stable clusters are treated as **noise**.
 
+<br>
+
 
 **HDBSCAN Algorithm Steps**
 
@@ -456,6 +534,9 @@ $$
    
 <p align="center"><img src="Images/hdbscan_view.png" alt="hdbscan" width="80%"/></p>
 
+<br>
+
+
 **Advantages**
 - **No epsilon (ε) required**.
 - Detects clusters with **varying densities**.
@@ -464,9 +545,25 @@ $$
 - Produces **stable and meaningful clusters**.
 - Works well with **real-world noisy data**.
 
+<br>
+
+
 **Disadvantages**
 - More **computationally expensive** than DBSCAN.
 - **Complex to understand** mathematically.
 - Struggles with **high-dimensional data**.
 - Needs **parameter tuning** (`min_samples`, `min_cluster_size`).
 - No **reachability plot visualization** like OPTICS.
+
+<br>
+
+| Feature                       | DBSCAN                     | OPTICS                              | HDBSCAN                       |
+|-------------------------------|----------------------------|------------------------------------|-------------------------------|
+| Cluster Shape                 | Arbitrary                  | Arbitrary                           | Arbitrary                     |
+| Handles Noise                 | Yes                        | Yes                                  | Yes                           |
+| Variable Density Clusters     | No                         | Yes                                  | Yes                           |
+| Parameters                    | eps, MinPts               | MinPts, optional eps                 | MinPts / min_cluster_size     |
+| Hierarchical Output           | No                         | Yes (reachability plot)             | Yes (condensed hierarchy)     |
+| Sensitivity to Parameters     | High                       | Medium                               | Low                           |
+| Automatically Determines Clusters | No                     | No                                   | Yes                           |
+| Computational Complexity      | O(n log n) – O(n²)         | O(n log n) – O(n²)                   | O(n log n) – O(n²)            |

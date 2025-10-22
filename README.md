@@ -743,3 +743,120 @@ $$
 - Sensitive to noisy data.
 
 <p align="center"><img src="Images/hiera.webp" alt="hier" width="80%"/></p>
+
+<br><br><br><br>
+
+## Distribution-Based Methods
+
+  These algortihms are assumed to be came form definided distribution such as Guassian Distribution
+
+  <br>
+  
+### Gaussian Mixture Models (GMMs)
+---
+
+It is a probabilistic clustering algorithm that assumes the data points are generated from  a mixture if several gissian distributions
+
+It is a soft clustering meansn instead of forcing the data points to a single cluster know as hard clustering ex k-means it gives the pobabilities of belogign to each cluster
+
+<br>
+
+<p align="center">
+ <img src="Images/gmm_3d_view.webp" alt="gmm_3d" width="50%"/>
+</p>
+ 
+<br>
+
+**Key Concepts**:
+
+**Gaussian distribution**
+- Mean (${\mu}$) → Centere of the distribution
+- Covariance (Σ) → Spread/shape of the distribution
+
+The probability density function of Guassian is :
+
+$$
+N(x|\mu, Σ) = \frac{1}{\sqrt{\(2\pi\)^d |Σ|}}exp\(-\frac{1}{2}\(x - \mu\)^TΣ^{-1}\(x-\mu\)\)
+$$
+
+GMM assumes that the dataset is generated from k different gauusians : 
+
+$$
+p(x) = \sum_{k=1}^K\pi_k N(x|\mu_k,Σ_k)
+$$
+
+where
+- ${\pi_k}$ = weight of the k-th Gaussian component(cluster prior probability)
+- ${\mu_k}$ = mean of cluster k
+- ${Σ_k}$ = covarience of cluster k
+- $\sum_{k=1}^K\pi_k = 1 $
+
+**Soft Clustering and Responsibilities**
+
+for each point $x_i$, GMM calculates the probability that it belongs to each cluster :
+
+$$
+\gamma(z_{ik}) = \frac{\pi_k N(x_i|\mu_k,Σ_k)}{\sum_{j=1}^K\pi_jN(x_i|\mu_j,Σ_j}
+$$
+
+This $\gamma$ is called responsibility and indicates how much cluster k is reponsible for point i. 
+
+<br>
+
+**Algorithm Steps**:
+
+- Initialization
+   - Choose the number of clusters K
+      - Means $\mu_k$ randomly or using k-means
+      - Covariance matrices $Σ_k$ = I(identity)
+      - Cluster weights $\pi_k$ = $\frac{1}{K}$
+    
+- Repeat the following steps until convergence:
+   - GMM uses EM (expectation -Maximization(EM) algortihm to find best parameters
+      - E-step(Expecation step) : compute the reponsislitiy $\gamma(z_{ik})$, which is the pobbability that data point $x_i$, belongs to cluster k
+      - M-step(Maximization step) : updates model parameters using reponsibilites.
+    
+$$
+\text{update weights : } \quad \pi_k = \frac{1}{n}\sum_{i=1}^n\gamma(z_{ik})
+$$
+
+$$
+\text{update means : } \quad \mu_k = \frac{\sum_{i=1}^n\gamma(z_{ik})x_i}{\sum_{i=1}^n\gamma(z_{ik})}
+$$
+
+$$
+\text{update covariance matrices : } \quad Σ_k = \frac{\sum_{i=1}^n\gamma(z_{ik})(x_i-\mu_k)(x_i-\mu_k)^T}{\sum_{i=1}^k\gamma(z_{ik})}
+$$
+
+- Stopping Condition
+   - Repeat E-step and M-step unit
+      - Parameters change very little , or
+      - Log-likelihood converges, or
+      - Maximim iterations reached
+- Final Output
+   - cluter assignment : take cluster with max responsibility
+ 
+<br>
+
+<p align="center">
+ <img src="Images/gmm.png" alt="gmm" width="50%"/>
+</p>
+
+<br>
+**Advantages**
+- **Soft Clustering** : Unlike K-Means, GMM assigns probabilities to data points for belonging to clusters (probabilistic clustering).
+- **Flexible Cluster Shape** : Can model **elliptical clusters** and complex shapes using covariance matrices.
+- **Better than K-Means for Real Data** : Works well even when clusters have **different sizes and variances**.
+- **Handles Overlapping Clusters** : Effective when clusters overlap—uses probability instead of hard boundaries.
+- **Statistically Grounded** : Based on strong mathematical foundation using probability distributions.
+- **Unsupervised Density Estimation** : Can estimate the probability density of data, useful for **anomaly detection**.
+
+<br>
+
+**Disadvantages**
+- **Assumes Gaussian Distribution** : Performance degrades if data is **not normally distributed**.
+- **Sensitive to Initialization** : Like K-Means, results depend on initial parameter estimates.
+- **Computationally Expensive** : EM algorithm can be **slow for large datasets**.
+- **Prone to Singularities** : Covariance matrix can fail when clusters collapse to a single point.
+- **Requires Number of Components (k)** : Must predefine number of clusters — not automatic.
+- **May Converge to Local Optima** : EM optimization is iterative and may get **stuck in suboptimal solutions**.

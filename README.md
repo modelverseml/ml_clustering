@@ -843,6 +843,7 @@ $$
 </p>
 
 <br>
+
 **Advantages**
 - **Soft Clustering** : Unlike K-Means, GMM assigns probabilities to data points for belonging to clusters (probabilistic clustering).
 - **Flexible Cluster Shape** : Can model **elliptical clusters** and complex shapes using covariance matrices.

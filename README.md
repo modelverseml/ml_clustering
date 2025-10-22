@@ -580,9 +580,9 @@ Clusters are visualized using a tree diagram called a **dendrogram**.
 
 <p align="center"><img src="Images/dendogram.webp" alt="dendogram" width="80%"/></p>
 
-
-## Agglomerative Approach (Bottom-up)
-
+<br><br>
+### Agglomerative Approach (Bottom-up)
+---
 **Agglomerative clustering is a bottom-up method**:
 
 - Each data point starts as its **own cluster**.  
@@ -628,4 +628,118 @@ $$
 D_{ward}\(A,B\) = \frac{|A||B|}{|A|+|B|} || \bar{a} - \bar{b}||^2
 $$
 
+<p align="center"><img src="Images/linkages.png" alt="linkages" width="80%"/></p>
 
+<br>
+
+**Algorithm Steps**:
+- Initialization: Treat each point as its own cluster.
+- Compute Distance Matrix: Calculate distances between all clusters using the chosen linkage criterion.
+- Find Closest Clusters: Identify clusters with the smallest distance.
+- Merge Clusters: Combine the two closest clusters into a single cluster.
+- Update Distance Matrix: Recalculate distances between the new cluster and existing clusters.
+- Repeat: Continue merging until all points form a single cluster or stopping criterion is met.
+- Build Dendrogram: Visualize merges to see cluster hierarchy
+
+<br>
+
+**Advantages**:
+- Produces a dendrogram, showing hierarchical relationships.
+- Can detect nested clusters of varying sizes.
+
+<br>
+
+**Disadvantages**:
+- Computationally expensive for large datasets.
+- Sensitive to noise and outliers.
+
+<br><br>
+
+### Divisive Approach (Top-Down)
+---
+Divisive clustering is a top-down hierarchical clustering method:
+
+- All data points start in one single cluster.
+- At each step, the algorithm selects the cluster with the highest dissimilarity and splits it into two subclusters.
+- Splitting continues recursively until each data point becomes its own cluster or a stopping condition is reached.
+
+This method focuses on splitting clusters instead of merging them like in Agglomerative Clustering.
+
+<br>
+
+**Key Mathematical Concepts**
+
+Let $C$ be a cluster containing points $x_1, x_2, ..., x_n$.
+
+**Average Dissimilarity of a Point**
+
+- For a point $x_i$, the average dissimilarity from other points in the same cluster is:
+
+$$
+D(x_i, C) = \frac{1}{|C|-1} \sum_{\substack{x_j \in C \\ j \ne i}} d(x_i, x_j)
+$$
+
+- where $d(x_i, x_j)$ is a distance metric such as Euclidean or Manhattan distance.
+
+**Selecting the Initial Split (Splinter Group)**
+
+- The algorithm selects the point that is least similar to others (maximum average dissimilarity):
+
+$$
+x_{\text{max}} = \arg\max_{x_i \in C} D(x_i, C)
+$$
+
+- This point starts a new subcluster called the **splinter group** $S$:
+
+$$
+S = \{x_{\text{max}}\}, \quad R = C - S
+$$
+
+**Moving Points Between Subclusters**
+
+- For each point $x_k \in R$, compute the average dissimilarity to both subclusters:
+
+$$
+D(x_k, S) = \frac{1}{|S|} \sum_{s \in S} d(x_k, s)
+$$
+
+$$
+D(x_k, R) = \frac{1}{|R|-1} \sum_{\substack{r \in R \\ r \ne x_k}} d(x_k, r)
+$$
+
+- Move $x_k$ from $R$ to $S$ if:
+
+$$
+D(x_k, S) < D(x_k, R)
+$$
+
+- This process continues until no point should be moved between $S$ and $R$.
+
+<br>
+
+**Algorithm Steps**:
+
+- Start with all data points in a single cluster C.
+- Compute average dissimilarity inside C.
+- Select the most dissimilar point to start the splinter group S.
+- Reassign remaining points based on their dissimilarity to S and R.
+- Finalize the split: C becomes two clusters S and R.
+- Select the next cluster to split (largest or most heterogeneous).
+- Repeat until stopping condition is met.
+- Visualize splits using a dendrogram.
+
+
+<br>
+
+**Advantages**
+- Can detect large, well-separated clusters.
+- Produces a full hierarchy of clusters.
+
+<br>
+
+**Limitations**
+- Computationally expensive: $O(n^2)$ time complexity.
+- More complex to implement than Agglomerative clustering.
+- Sensitive to noisy data.
+
+<p align="center"><img src="Images/hiera.webp" alt="hier" width="80%"/></p>

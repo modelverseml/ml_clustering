@@ -861,3 +861,74 @@ $$
 - **Prone to Singularities** : Covariance matrix can fail when clusters collapse to a single point.
 - **Requires Number of Components (k)** : Must predefine number of clusters — not automatic.
 - **May Converge to Local Optima** : EM optimization is iterative and may get **stuck in suboptimal solutions**.
+
+<br><br><br><br>
+
+### Mean Shift Clustering
+---
+Mean Shift is a centroid-based, non-parametric clustering algorithm.
+
+Unlike K-Means, it does not require specifying the number of clusters in advance. Instead, it discovers clusters by iteratively shifting data points toward regions of higher data density.
+
+<br>
+
+**Key Concepts**
+
+**Kernel Density Estimation (KDE)**
+- Mean Shift uses Kernel Density Estimation to estimate the data density around a point.
+
+$$
+\hat{f}(x) = \frac{1}{n h^d} \sum_{i=1}^n K ( \frac{x - x_i}{h} )
+$$
+
+where
+- n = number of data points
+- d = dimension of data
+- h = badnwidth (radius of window)
+- K = kernal function
+
+**Mean Shift Vector:**
+- The mean shift vector points towards the region of highest data densisty and is computed as
+
+$$
+m(x) = \frac{\sum_{i=1}^n x_i K(\frac{x-x_i}{h})}{\sum_{i=1}^n K (\frac{x-x_i}{h})} - x_i
+$$
+
+- This vector points from the current point x toward the weighted mean of nearby points.
+- Points are shifted iteratively using:
+
+$$
+x_{new} = \frac{\sum_{i=1}^n x_i K (\frac{x-x_i}{h})}{\sum_{i=1}^n K(\frac{x-x_i}{h})}
+$$
+
+<br>
+
+**Algorithm Steps**
+-  Choose a badwidth parameter h
+-  Initialize: Treat each data point as a potential cluster center.
+- For each point:
+   - Find neighboring points within radius h.
+   - Compute the mean shift vector.
+   - Move the point toward that mean.
+-  Repeat step 3 until convergence (movement becomes negligible).
+-  Cluster assignment: Points that converge to the same location belong to the same cluster.
+
+<br>
+
+<p align="center"><img src="Images/mean_shift_vector.png" alt="meanshift" width="80%"/></p>
+
+<br>
+
+**Advantages**
+- No need to specify number of clusters
+- Finds arbitrarily shaped clusters
+- Robust to noise
+- Based on density estimation (good for spatial data)
+
+<br>
+
+**Disadvantages**
+- Slow for large datasets
+- Sensitive to bandwidth parameter h
+- May merge nearby clusters
+- High-dimensional data may perform poorly

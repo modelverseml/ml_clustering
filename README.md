@@ -53,6 +53,86 @@ There are numerous algorithms available to solve clustering problems, and each u
     - Spectral Clustering – uses graph theory and eigenvalues to cluster data in complex structures.
       
 <br><br>
+## Optimal Cluster Number
+
+Before diving into the algorithms, it’s important to discuss a key topic in clustering: determining the optimal number of clusters.
+
+Some clustering algorithms require the number of clusters to be defined beforehand, while others can identify clusters automatically. For algorithms that need a predefined number, it’s often unclear what number to choose. To address this, there are methods that help estimate the appropriate number of clusters.
+
+For simplicity, let’s assume we have K clusters for now and explore how to determine the best value of K
+
+### 1. Elbow Method
+
+The Elbow Method uses the **Within-Cluster Sum of Squares (WCSS)** to evaluate cluster compactness.
+
+**Formula:**
+
+$$
+WCSS = \sum_{i=1}^{k} \sum_{x \in C_i} \| x - \mu_i \|^2
+$$
+
+Where:  
+- $C_i$ = cluster i  
+- $mu_i$ = centroid of cluster i  
+- x = data point in cluster i  
+
+<br>
+
+**Procedure:**
+1. Run K-Means clustering for a range of k values (e.g., 1 to 10).  
+2. Compute WCSS for each k.  
+3. Plot WCSS against k.  
+4. Identify the "elbow point," where WCSS reduction slows down. This point suggests the optimal number of clusters
+
+<br> 
+
+<p align="center">
+<img src="Images/elbow_method.png" alt="elbow" width="50%"/>
+</p>
+
+<br>
+
+**Interpretation:**  
+The elbow point indicates diminishing returns in reducing WCSS by increasing \(k\), making it a suitable choice for the number of clusters.
+
+
+<br><br>
+
+### 2. Silhouette Score
+
+The Silhouette Score measures how similar each data point is to its own cluster compared to other clusters.
+
+**Formula for a single point i:**
+
+$$
+s(i) = \frac{b(i) - a(i)}{\max(a(i), b(i))}
+$$`
+
+Where:  
+- a(i) = average distance between i and all other points in its cluster  
+- b(i) = minimum average distance between i and all points in other clusters  
+
+**Procedure:**
+1. Run clustering for different k values.  
+2. Calculate the silhouette coefficient for each data point.  
+3. Compute the average silhouette score for each k.  
+4. Choose the k that maximizes the average silhouette score.
+
+<p align="center">
+<img src="Images/silhouette.webp" alt="silhouette" width="50%"/>
+</p>
+
+
+
+**Interpretation:**  
+- Score near 1: data points are well clustered.  
+- Score near 0: data points are on the boundary of clusters.  
+- Negative score: possible misclassification.  
+
+**Recommended Use:**  
+Use the Silhouette Score to validate or refine the cluster number suggested by the Elbow Method.
+ 
+<br><br><br><br>
 ## Centroid-Based Methods
 
 ### K-Means 

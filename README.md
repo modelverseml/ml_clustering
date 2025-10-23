@@ -932,3 +932,86 @@ $$
 - Sensitive to bandwidth parameter h
 - May merge nearby clusters
 - High-dimensional data may perform poorly
+
+<br><br>
+
+### Affinity Propagation Clustering
+---
+
+Affinity Propagation is a **message-passing based clustering algorithm** that identifies **exemplar points** (representative data points) and builds clusters around them. Unlike K-Means or GMM, it **does not require the number of clusters to be specified** beforehand.
+
+<br>
+
+**Key Idea**
+
+Affinity Propagation works by passing messages between pairs of points until a good set of exemplars and clusters emerges.
+
+- Every data point is initially considered as a **potential cluster center**.
+- Two types of messages are exchanged iteratively:
+  - **Responsibility (r):** Suitability of a point being the exemplar (center) for another.
+  - **Availability (a):** How appropriate it is for a point to choose another as its exemplar.
+
+Similarity Function
+Instead of distance, Affinity Propagation uses **similarity**:
+
+$$
+s(i, k) = -\| x_i - x_k \|^2
+$$
+
+Where:
+- $s(i, k)$ → similarity between point $x_i$ and $x_k$
+- Larger similarity = closer points
+- $s(k, k)$ → **preference** value controls how likely each point is to become an exemplar  
+  (higher preference = more clusters
+
+Message Updates
+
+1. Responsibility Update
+Indicates how well-suited point \( k \) is to be the cluster center for point \( i \):
+
+$$
+r(i, k) \leftarrow s(i, k) - \max_{k' \neq k} \{ a(i, k') + s(i, k') \}
+$$
+
+3. Availability Update
+Reflects how appropriate it would be for point \( i \) to select point \( k \) as its exemplar:
+
+For $i \neq k$:
+
+$$
+a(i, k) \leftarrow \min \left( 0, \; r(k, k) + \sum_{i' \notin \{i,k\}} \max(0, r(i', k)) \right)
+$$
+
+For self-availability $i = k$:
+
+$$
+a(k, k) \leftarrow \sum_{i' \neq k} \max(0, r(i', k))
+$$
+
+<br>
+
+**Algorithm Steps**
+1. Compute similarity matrix $s(i, k)$ for all data points.
+2. Initialize all responsibilities $r(i,k) = 0$ and availabilities $a(i,k) = 0$.
+3. Iteratively update:
+   - Responsibilities $r(i,k)$
+   - Availabilities $a(i,k)$
+4. Compute $a(i,k) + r(i,k)$ to find exemplars.
+5. Assign each data point to the exemplar with the highest value.
+6. Stop when values converge or after max iterations.
+
+<br>
+
+**Advantages**
+- Automatically determines the number of clusters
+- Does not need random initialization
+- Works well for **complex and irregular cluster shapes**
+- Identifies **representative examples (exemplars)**
+
+<br>
+
+**Disadvantages**
+- Computationally expensive for large datasets (O(n²) memory)
+- Requires tuning the **preference parameter**
+- Sensitive to similarity measure
+- Slower than K-Means

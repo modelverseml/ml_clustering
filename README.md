@@ -990,6 +990,10 @@ $$
 
 <br>
 
+<p align="center"><img src="Images/affinity.webp" alt="afinity" width="50%"/></p>
+
+<br>
+
 **Algorithm Steps**
 1. Compute similarity matrix $s(i, k)$ for all data points.
 2. Initialize all responsibilities $r(i,k) = 0$ and availabilities $a(i,k) = 0$.
@@ -1001,6 +1005,12 @@ $$
 6. Stop when values converge or after max iterations.
 
 <br>
+
+<p align="center"><img src="Images/affinity_iteration.png" alt="afinity_iteration" width="50%"/></p>
+
+<br>
+
+
 
 **Advantages**
 - Automatically determines the number of clusters

@@ -967,25 +967,25 @@ Where:
 Message Updates
 
 1. Responsibility Update
-Indicates how well-suited point \( k \) is to be the cluster center for point \( i \):
+Indicates how well-suited point k is to be the cluster center for point i :
 
 $$
-r(i, k) \leftarrow s(i, k) - \max_{k' \neq k} \{ a(i, k') + s(i, k') \}
+r(i, k) = s(i, k) - \max_{k' \neq k} \{ a(i, k') + s(i, k') \}
 $$
 
 3. Availability Update
-Reflects how appropriate it would be for point \( i \) to select point \( k \) as its exemplar:
+Reflects how appropriate it would be for point i to select point k  as its exemplar:
 
 For $i \neq k$:
 
 $$
-a(i, k) \leftarrow \min \left( 0, \; r(k, k) + \sum_{i' \notin \{i,k\}} \max(0, r(i', k)) \right)
+a(i, k) = \min \left( 0, \; r(k, k) + \sum_{i' \notin \{i,k\}} \max(0, r(i', k)) \right)
 $$
 
 For self-availability $i = k$:
 
 $$
-a(k, k) \leftarrow \sum_{i' \neq k} \max(0, r(i', k))
+a(k, k) = \sum_{i' \neq k} \max(0, r(i', k))
 $$
 
 <br>
@@ -996,13 +996,23 @@ $$
 
 **Algorithm Steps**
 1. Compute similarity matrix $s(i, k)$ for all data points.
-2. Initialize all responsibilities $r(i,k) = 0$ and availabilities $a(i,k) = 0$.
-3. Iteratively update:
+$$
+s(i, k) = -\| x_i - x_k \|^2
+$$
+   - This tells how similar two points are (closer = better).
+3. Initialize all responsibilities $r(i,k) = 0$ and availabilities $a(i,k) = 0$.
+4. Iteratively update:
    - Responsibilities $r(i,k)$
    - Availabilities $a(i,k)$
-4. Compute $a(i,k) + r(i,k)$ to find exemplars.
-5. Assign each data point to the exemplar with the highest value.
-6. Stop when values converge or after max iterations.
+5. Combine Messages:
+   - Determine exemplar for each point:
+
+$$
+ argmax_k \\{ a(i,k) + r(i,k) \\}
+$$
+
+7. Assign each data point to the exemplar with the highest value.
+8. Stop when values converge or after max iterations.
 
 <br>
 
@@ -1025,3 +1035,187 @@ $$
 - Requires tuning the **preference parameter**
 - Sensitive to similarity measure
 - Slower than K-Means
+
+<br><br>
+
+### BIRCH (Balanced Iterative Reducing and Clustering using Hierarchies)
+---
+
+BIRCH is a **hierarchical clustering algorithm designed for large datasets**. It efficiently summarizes data points into **Clustering Features (CFs)** to reduce memory usage and speed up clustering.
+
+<br>
+
+**Key Idea**
+- Instead of storing all points, BIRCH stores **compact representations** called **Clustering Features (CFs)** in a tree structure (**CF Tree**).
+- Each CF represents a subcluster of points and stores **enough information** to compute centroid, radius, and diameter without keeping all original points.
+- After building the CF Tree, a global clustering algorithm (like K-Means) can be applied to the leaf nodes to produce final clusters.
+
+<br>
+
+**Mathematical View**
+
+Clustering Feature (CF)
+- A CF summarizes  N  points as:
+
+$$
+CF = (N, LS, SS)
+$$
+
+Where:  
+- N  → Number of points in the cluster  
+- LS = $\sum_{i=1}^N x_i$ (linear sum of points)  
+- SS = $\sum_{i=1}^N x_i^2$ (squared sum of points)  
+
+From CF, we can calculate:
+
+- **Centroid**:
+
+$$
+\mu = \frac{LS}{N}
+$$
+
+- **Radius** (spread of cluster):
+
+$$
+R = \sqrt{ \frac{SS}{N} - \left(\frac{LS}{N}\right)^2 }
+$$
+
+- **Diameter** (average pairwise distance):
+
+$$
+D = \sqrt{ \frac{2 \cdot N \cdot SS - 2 \cdot LS^2}{N \cdot (N-1)} }
+$$
+
+<br>
+
+**CF Tree Structure**
+- A **balanced hierarchical tree** with parameters:
+  - **Branching Factor (B):** Maximum number of child nodes per node  
+  - **Threshold (T):** Maximum radius or diameter allowed for subclusters  
+- Each **leaf node** stores CFs representing subclusters.  
+- When inserting a new point, it is merged with the **closest subcluster** if radius < T; otherwise, a new CF is created or a node is split.
+
+<br>
+
+**Algorithm Steps**
+1. **Build CF Tree:** Insert points one by one. Merge into existing CF if within threshold, else create new CF or split node.  
+2. **Condense Tree (Optional):** Remove outliers or merge small clusters.  
+3. **Global Clustering:** Apply a clustering algorithm (e.g., K-Means) on leaf CFs.  
+4. **Refinement (Optional):** Reassign original points for better accuracy.
+
+<br>
+
+<p align="center"><img src="Images/birch.webp" alt="birch" width="50%"/></p>
+
+<br>
+
+**Advantages**
+- Handles **very large datasets efficiently**  
+- **Memory-efficient** due to cluster summarization  
+- Works **incrementally** (good for streaming data)  
+- Robust to noise  
+- Faster than traditional hierarchical clustering  
+
+<br>
+
+**Disadvantages**
+- Sensitive to **threshold parameter (T)**  
+- Best suited for **spherical clusters**  
+- Less effective for **high-dimensional data**  
+- CF Tree decisions are **hard to undo once built**  
+
+<br><br>
+
+### Spectral Clustering
+
+Spectral Clustering is a **graph-based clustering algorithm** that uses **eigenvalues of a similarity matrix** to reduce dimensionality before clustering. It is particularly useful for detecting **non-convex or complex-shaped clusters**, where traditional methods like K-Means may fail.
+
+<br>
+
+**Key Idea**
+- Represent the dataset as a **graph**, with each node as a data point and edges representing similarity.  
+- Use a **similarity function** (commonly Gaussian similarity):
+
+$$
+s(i, j) = \exp\Big(-\frac{\|x_i - x_j\|^2}{2\sigma^2}\Big)
+$$
+
+- Construct a **graph Laplacian** from the similarity matrix.  
+- Compute the **first k eigenvectors** corresponding to the smallest eigenvalues.  
+- Use these eigenvectors to embed data into a **lower-dimensional space**.  
+- Apply a clustering algorithm like **K-Means** on the embedding to get final clusters.
+
+<br>
+
+**Mathematical View**
+
+1. **Similarity Matrix \(S\)**
+
+$$
+S_{ij} =
+\begin{cases} 
+\exp\Big(-\frac{\|x_i - x_j\|^2}{2\sigma^2}\Big), & i \neq j \\
+0, & i = j
+\end{cases}
+$$
+
+2. **Degree Matrix \(D\)**
+
+$$
+D_{ii} = \sum_j S_{ij}
+$$
+
+3. **Graph Laplacian \(L\)**
+
+$$
+L = D - S
+$$
+
+or normalized Laplacian:
+
+$$
+L_{\text{sym}} = D^{-1/2} L D^{-1/2} = I - D^{-1/2} S D^{-1/2}
+$$
+
+4. **Eigenvectors**
+
+- Compute the first k eigenvectors of L corresponding to the **smallest eigenvalues**.  
+- Form a matrix $U \in \mathbb{R}^{n \times k}$ using these eigenvectors.  
+
+5. **Clustering**
+
+- Normalize rows of U (optional).  
+- Apply **K-Means** on the rows of U to assign final clusters.
+
+<br>
+
+**Algorithm Steps**
+
+1. Build the **similarity graph** S from the dataset.  
+2. Compute **degree matrix** D and **graph Laplacian** L.  
+3. Compute **first k eigenvectors** of L.  
+4. Construct matrix U using eigenvectors as rows.  
+5. (Optional) Normalize rows of U.  
+6. Apply **K-Means** on U to get cluster assignments.
+
+<br>
+
+<p align="center"><img src="Images/spectral.png" alt="spectral" width="50%"/></p>
+
+
+<br>
+
+**Advantages**
+
+- Detects **non-convex and complex-shaped clusters**.  
+- Captures **global structure** of the dataset.  
+- Works well for **small to medium datasets**.
+
+<br>
+
+**Disadvantages**
+
+- Computationally expensive for **large datasets** due to eigenvalue decomposition.  
+- Requires **number of clusters k** in advance.  
+- Sensitive to **similarity function** and parameters like $\sigma$.  
+- High-dimensional data may require **preprocessing** (e.g., PCA).

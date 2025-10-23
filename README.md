@@ -915,7 +915,7 @@ $$
 
 <br>
 
-<p align="center"><img src="Images/mean_shift_vector.png" alt="meanshift" width="80%"/></p>
+<p align="center"><img src="Images/mean_shift_vector.png" alt="meanshift" width="50%"/></p>
 
 <br>
 

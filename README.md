@@ -106,7 +106,7 @@ The Silhouette Score measures how similar each data point is to its own cluster 
 
 $$
 s(i) = \frac{b(i) - a(i)}{\max(a(i), b(i))}
-$$`
+$$
 
 Where:  
 - a(i) = average distance between i and all other points in its cluster  

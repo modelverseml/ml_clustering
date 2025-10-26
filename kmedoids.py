@@ -1,4 +1,6 @@
 import numpy as np
+from centroid_methods_common_functions import _assign_cluster,_compute_inertia, \
+                                _initialise_centorids_or_medoids
 
 class KMedoids:
 
@@ -6,95 +8,69 @@ class KMedoids:
 
         self.data = data
         self.n_clusters = n_clusters
-        self.get_initial_centers()
+        self.inertia_ = np.inf
+        self.medoids = _initialise_centorids_or_medoids(self.data,self.n_clusters)
 
-    def get_initial_centers(self):
+    def get_clusters(self,threshold :float = 0.001 , max_iter:int = 100):
+
+        """
+        Perform K-Medoids clustering on the dataset.
+
+        Parameters
+        ----------
+        threshold : float
+            Minimum change in inertia to continue iterations.
+        max_iter : int
+            Maximum number of iterations to run.
+
+        Returns
+        -------
+        tuple
+            inertia_, cluster_medoids, cluster_labels
+        """
         
-        n_samples = self.data.shape[0]
-        first_idx = np.random.choice(n_samples)
-        
-        self.medoids = [self.data.iloc[first_idx].values.tolist()]
-
-        for _ in range(1, self.n_clusters):
-
-            ecludian_dist = np.array([
-                min(np.sum((mediod-instance)**2) for mediod in self.medoids) 
-                for indx,instance in self.data.iterrows()
-                ])
-
-            instance_probabilites = ecludian_dist/ecludian_dist.sum()
-
-            self.medoids.append(self.data.iloc[np.random.choice(n_samples,p=instance_probabilites)].values.tolist())
-
-
-    def assign_medoids(self,max_iterations = 50,batch_size = None):
-
-        if not batch_size:
-
-            batch_size = self.data.shape[0]
-
-
-        for i in range(max_iterations):
-
-            batch_indices = np.random.choice(len(self.data), batch_size, replace=False)
-
-            batch = self.data.iloc[batch_indices].reset_index(drop=True)
+        for _ in range(max_iter):
             
-            batch_values = batch.values.astype(float)
-            clusters = np.array([self.get_single_instance_cluster(row) for row in batch_values])
+            ## for all the data check the nearest clusters medoid and assign its cluster to the instance
+            cluster_labels = self.data.apply(_assign_cluster,args = (self.medoids,), axis=1)
+
+            # get the inertia for the generated custers labels
+            current_inertia = _compute_inertia(self.data,self.medoids,cluster_labels)
+
+    
+            if self.inertia_ == np.inf:
+                self.inertia_ = current_inertia
+
+            elif abs(self.inertia_ - current_inertia) < threshold:
+                break
+
+            self.medoids = self._update_medoids(cluster_labels)
             
-            self.update_medoids(batch,clusters)
+            self.inertia_ = current_inertia
+  
+        final_labels = self.data.apply(_assign_cluster,args = (self.medoids,), axis=1)
 
-            updated_cost_value = self.get_cost_function_value(batch,clusters)
+        return self.inertia_,self.medoids,final_labels
 
-        final_clusters = np.array([self.get_single_instance_cluster(row) for row in self.data.values])
 
-        return updated_cost_value,self.medoids,final_clusters
-    
-    
-
-    
-    """
-    Update single instance cluster
-    """
-    def get_single_instance_cluster(self,instance):
+    def _update_medoids(self,cluster_labels):
         
-        dists = np.sum((self.medoids - instance) ** 2, axis=1)
+        """
+        Instead of calculating the centroid of the cluster, we compute the sum of distances 
+        from each point in the cluster to all other points within the same cluster. 
+        The point with the minimum total distance is chosen as the medoid for that cluster.
+        """
 
-        return int(np.argmin(dists))
-    
-    
-    
-    def update_medoids(self,batch,clusters):
-
-        final_medoids = []
-        for cluster_idx in range(self.n_clusters):
-            mask = (clusters == cluster_idx)
-            cluster_points = batch.iloc[np.where(mask)[0]]
-
-            medoids_distance = np.inf
-            medoids = []
+        medoids = []
+        for index in range(self.n_clusters):
+            mask = (cluster_labels == index)
+            masked_data = self.data.iloc[np.where(mask)[0]].reset_index(drop=True)
             
-            for instance in cluster_points.values:
-                instance_dis = np.sum(np.sum((cluster_points-instance)**2,axis =1))
+            distances = [
+                np.sum(np.sum((masked_data - instance)**2,axis=1))
+                for instance in masked_data.values
+                    ]
 
-                if instance_dis < medoids_distance :
-                    medoids_distance = instance_dis
-                    medoids = instance
+            medoids.append(masked_data.iloc[np.argmin(distances)].values)
 
-            final_medoids.append(medoids)
-        self.medoids = np.array(final_medoids)
-
-
-    """
-    Getting cost function
-    """
-    def get_cost_function_value(self,batch,clusters):
-        cost = 0
-        for index,mediod in enumerate(self.medoids):
-            mask = (clusters == index)
-            pts = batch.iloc[np.where(mask)[0]].values
-
-            cost += np.sum(np.sum((pts - mediod) ** 2, axis=1))
-        
-        return round(cost,2)
+        return medoids

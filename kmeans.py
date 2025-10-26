@@ -1,87 +1,87 @@
 
 import numpy as np
-import pandas as pd
-
+from centroid_methods_common_functions import _assign_cluster,_compute_inertia,_update_centroids
 class ManualKMeans:
 
     """
-        Inintialising all the variables
+    A manual implementation of the K-Means clustering algorithm.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The dataset to cluster.
+    n_clusters : int
+        The number of clusters to form.
+
+    Attributes
+    ----------
+    cluster_centroids : np.ndarray
+        Array of cluster centroids.
+    inertia_ : float
+        Sum of squared distances of samples to their closest cluster center.
     """
-    def __init__(self,data):
+
+    def __init__(self,data : np.array,n_clusters : int) -> None :
+
+        self.data = data
+        self.n_clusters = n_clusters
+        self.cluster_centroids: np.ndarray = np.array([])
+        self.inertia_: float = np.inf
+
+        ## Before assignning clusters first we need inintial centroids
+        self._initialize_centroids()
+
+
+
+    def get_clusters(self,threshold :float = 0.001 , max_iter:int = 100):
+
+        """
+        Perform K-Means clustering on the dataset.
+
+        Parameters
+        ----------
+        threshold : float
+            Minimum change in inertia to continue iterations.
+        max_iter : int
+            Maximum number of iterations to run.
+
+        Returns
+        -------
+        tuple
+            inertia_, cluster_centroids, cluster_labels
+        """
         
-        self.data = data.copy()
-        self.cost_function_val = np.inf
-
-        self.error = 0.1
-
-
-
-    """
-    Intialising the centers we are getting this from user input becase we can use the same functionality for 
-    both k-means and k++
-
-    """
-    def initialise_centers(self, centers = []):
-
-        self.centers = centers
-
-    """
-    Here we are assigning clusters to the datapoints based on the nearest cluster center
-    """
-
-    def assign_clusters(self,max_iterations = 50,batch_size = None):
-
-        if not batch_size:
-
-            batch_size = self.data.shape[0]
-
-        for i in range(max_iterations):
-
-            batch_indices = np.random.choice(len(self.data), batch_size, replace=False)
-
-            batch = self.data.iloc[batch_indices]
+        for _ in range(max_iter):
             
-            cols = batch.columns
+            ## for all the data check the nearest clusters center and assign its cluster to the instance
+            cluster_labels = self.data.apply(_assign_cluster,args = (self.cluster_centroids,), axis=1)
 
-            clusters = batch.apply(self.get_single_instance_cluster, axis=1)
+            # get the inertia for the generated custers labels
+            current_inertia = _compute_inertia(self.data,self.cluster_centroids,cluster_labels)
+
+
+            if self.inertia_ == np.inf:
+                self.inertia_ = current_inertia
+
+
+            elif abs(self.inertia_ - current_inertia) < threshold:
+                break
+
+            self.cluster_centroids = _update_centroids(self.data,self.n_clusters,cluster_labels)
             
-            self.update_centroids(batch,clusters)
+            self.inertia_ = current_inertia
+  
+        final_labels = self.data.apply(_assign_cluster,args = (self.cluster_centroids,), axis=1)
 
-            updated_cost_value = self.get_cost_function_value(batch,clusters)
+        return self.inertia_,self.cluster_centroids,final_labels
+            
+
+    def _initialize_centroids(self) -> None:
+
+        ## Randomly select initial centroids from the data.
+        self.cluster_centroids =  self.data.sample(n=self.n_clusters).values
 
 
-        final_clusters = self.data.apply(self.get_single_instance_cluster, axis=1)
-
-        return updated_cost_value,self.centers,final_clusters
 
 
 
-    """
-    Update single instance cluster
-    """
-    def get_single_instance_cluster(self,instance):
-        
-        return np.argmin([np.sum((instance.values - center) ** 2) for center in self.centers])
-
-    """
-    Updating centroids
-    """
-    def update_centroids(self,batch,clusters):
-
-        updated_data = batch.copy()
-
-        updated_data['cluster'] = clusters
-
-        self.centers = updated_data.groupby('cluster').mean().values
-    
-    """
-    Getting cost function
-    """
-    def get_cost_function_value(self,batch,clusters):
-        cost = 0
-
-        for index,center in enumerate(self.centers):
-            for _, instance in (batch[clusters==index]).iterrows():
-                cost += sum((instance - center)**2)
-
-        return round(cost,2)

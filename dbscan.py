@@ -16,6 +16,7 @@ class DBSCAN:
         self.data['is_visited'] = 0
         self.data['cluster'] = -1
 
+
     def get_clusters(self): 
         
         cluster_id = -1
@@ -30,9 +31,10 @@ class DBSCAN:
                 
                 # Checking for core point
                 if len(neighbour_indices)>= self.MinPts:
-
                     cluster_id+=1
-                    self.expand_cluster(index,neighbour_indices,cluster_id)
+
+                    self.data.at[index,'cluter'] = cluster_id
+                    self.expand_cluster(neighbour_indices,cluster_id)
 
                 # making it as noise for time being
                 else:
@@ -40,22 +42,26 @@ class DBSCAN:
                 
         return self.data['cluster']
 
-    def expand_cluster(self, index,neighbour_indices,cluster_id):
 
-        self.data.at[index,'cluter'] = cluster_id
+    def expand_cluster(self, neighbour_indices,cluster_id):
 
-        for neighbour in neighbour_indices:
+        ## looping through neighbours and adding its neighbours to the list if it is core point
+        while(neighbour_indices):
 
-            if self.data.at[neighbour,'is_visited'] == 0:
-                self.data.at[neighbour,'is_visited'] = 1
+            neighbour_index = neighbour_indices.pop(0)
 
-                neighbour_neighbours_indices = self.get_neighbours_index(neighbour)
+            if self.data.at[neighbour_index,'is_visited'] == 0:
+                self.data.at[neighbour_index,'is_visited'] = 1
+
+                neighbour_neighbours_indices = self.get_neighbours_index(neighbour_index)
 
                 if len(neighbour_neighbours_indices) >= self.MinPts:
-                    self.expand_cluster(neighbour,neighbour_neighbours_indices,cluster_id)
+                    self.data.at[neighbour_index,'cluter'] = cluster_id
+
+                    neighbour_indices.extend(neighbour_neighbours_indices)
             
-            if self.data.at[neighbour,'cluster'] == -1:
-                self.data.at[neighbour,'cluster'] = cluster_id
+            if self.data.at[neighbour_index,'cluster'] == -1:
+                self.data.at[neighbour_index,'cluster'] = cluster_id
 
 
     def get_neighbours_index(self,index):

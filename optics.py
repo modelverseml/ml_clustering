@@ -34,7 +34,8 @@ class OPTICS:
 
 
 
-        # reachability_distances = [dist for dist, idx in self.order_dataset]
+        reachability_distances = [dist for dist, idx in self.order_dataset]
+
         # plt.figure(figsize=(10,4))
         # plt.bar(range(len(reachability_distances)), reachability_distances, color='skyblue')
         # plt.xlabel("Points in OPTICS order")

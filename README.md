@@ -567,7 +567,7 @@ $$
     - Clusters are chosen based on **stability**, defined as:
 
 $$
-\text{Stability}(C) = \sum_{p \in C} \big( \lambda_{\text{birth}}(p) - \lambda_{\text{death}}(p) \big)
+\text{Stability}(C) = \sum_{p \in C} \big( \lambda_{\text{birth}}(p) - \lambda_{\text{death}}(C) \big)
 $$
 
 Where:

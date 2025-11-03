@@ -401,6 +401,8 @@ $$
 
   <p align="center"><img src="Images/dbscan_difference.png" alt="dbscan_view" width="80%"/></p>
 
+- [View DBSCAN manual code implementation](dbscan.py)
+
 <br>
 
 
@@ -496,7 +498,7 @@ $$
 7. Extract Clusters
    - After ordering all points, define clusters by selecting a reachability distance threshold
    - Points separated by large reachability distances form different clusters
-
+8. [View OPTICS manual code implementation](optics.py)
 
 <br>
 
